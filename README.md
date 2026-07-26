@@ -28,8 +28,9 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 | [GDD.md](GDD.md) | Game design (rules, systems, win/loss) — source of truth for *what the game is* |
 | [SPEC.md](SPEC.md) | Technical specification — stack, folders, data, architecture |
 | [ROADMAP.md](ROADMAP.md) | Phased build plan and checklists |
-| [AGENTS.md](AGENTS.md) | Context for AI coding agents working in this repo |
-| [LEARNINGS.md](LEARNINGS.md) | Decision log (Q&A) — *why* we chose what we chose |
+| [AGENTS.md](AGENTS.md) | Context for AI coding agents + **Playbook** (branches, agents, CI) |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute (humans + agents) |
+| [LEARNINGS.md](LEARNINGS.md) | Major decision log only (Q&A) |
 | [QandA.md](QandA.md) | Design Q&A trail (round 1) |
 | [QandA-systems.md](QandA-systems.md) | Systems Q&A trail (round 2, locked) |
 
