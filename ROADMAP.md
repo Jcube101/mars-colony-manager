@@ -1,6 +1,6 @@
 # ROADMAP.md — Mars Colony Manager
 
-Phased build plan. Design is locked (GDD v0.3). Implementation starts in a dedicated worktree after docs land.
+Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **feature branches** (no worktrees for this project).
 
 ---
 
@@ -9,7 +9,8 @@ Phased build plan. Design is locked (GDD v0.3). Implementation starts in a dedic
 - [x] GDD v0.3 (systems + loop closed)
 - [x] Design Q&A trails (`QandA.md`, `QandA-systems.md`)
 - [x] Seed `README.md`, `AGENTS.md`, `ROADMAP.md`, `LEARNINGS.md`, `SPEC.md`
-- [ ] Commit docs; open implementation worktree
+- [x] Commit docs on main
+- [ ] Open `feat/phase-1-scaffold` (or equivalent) for implementation
 
 ---
 

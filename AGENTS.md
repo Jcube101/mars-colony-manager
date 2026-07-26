@@ -124,25 +124,28 @@ npm test
 
 Short operating manual for humans and agents. More narrative context lives in chat history; **this is the durable process**.
 
-### Branch vs worktree
+### Branches only (no worktrees for this project)
 
-| | Branch | Worktree |
-|--|--------|----------|
-| **Is** | A movable label on commits (`feat/sim-pipeline`) | A **separate directory** attached to a branch |
-| **Solves** | Isolating history / PRs | Isolating *files on disk* so two checkouts don’t overwrite each other |
-| **Typical** | Always create a branch for work | Add a worktree when you need parallel folders (you on `main`, agent on `feat/…`) |
+This repo uses **feature branches in a single working copy**. Do not create git worktrees for Mars Colony Manager unless the human explicitly revives that workflow later.
 
-**Rule:** every unit of work gets a **branch**. Use a **worktree** when you (or an agent) need a second working copy at the same time. One mission per worktree; remove it after merge.
+| Practice | Do |
+|----------|-----|
+| Start work | `git checkout main && git pull` then `git checkout -b feat/<phase-or-topic>` |
+| One mission | One branch per ROADMAP phase or focused fix |
+| Integrate | PR into `main`, then delete the feature branch |
+| Avoid | `git worktree add`, parallel checkouts, coding directly on `main` |
+
+**Rule:** every unit of work gets a **branch**. Stay in one folder; switch branches when switching missions (commit or stash first).
 
 ### Standard delivery loop
 
 1. Pick one **ROADMAP** phase / checkbox set.  
-2. `git checkout -b feat/<phase-or-topic>` (optional: `git worktree add …` for isolation).  
+2. `git checkout main && git pull` then `git checkout -b feat/<phase-or-topic>`.  
 3. Implement **only** that scope; do not invent systems outside GDD.  
 4. Prove it: `npm test` and `npm run build` (once scaffold exists).  
 5. Open a **PR into `main`** (even solo).  
 6. When CI exists, require green checks before merge.  
-7. Merge → delete branch/worktree → add a LEARNINGS entry **only if** the decision is major (architecture, pipeline, player fantasy).  
+7. Merge → delete feature branch → add a LEARNINGS entry **only if** the decision is major (architecture, pipeline, player fantasy).  
 
 ### Agent use (Grok Build)
 
@@ -150,21 +153,23 @@ You are the tech lead; agents are fast juniors. Constrain them.
 
 | Situation | Prefer |
 |-----------|--------|
-| Main chat implementing a phase | Default session; keep prompt scoped to one ROADMAP phase |
+| Main chat implementing a phase | Default session on the feature branch; keep prompt scoped to one ROADMAP phase |
 | “What’s in the repo / where is X?” | **explore** subagent (read-only investigation) |
 | “How should we implement X?” before coding | **plan** subagent (read-only plan; no edits) |
-| Multi-step implement/fix in parallel | **general-purpose** subagent; better in its **own branch/worktree** |
-| Large or risky edits | Worktree isolation so `main` stays clean until review |
+| Multi-step implement/fix | **general-purpose** subagent on the **same feature branch** (not on `main`) |
+| Risky / large edits | Still one branch; small commits; review before merge to `main` |
 
 **Prompt shape for any implement session:**
 
+- Confirm current branch is `feat/…` (not `main`)  
 - Phase + acceptance criteria from ROADMAP  
 - Files/areas allowed to touch  
 - Commands that must pass  
 - Explicit non-goals (`no React`, `no new species`, `no backend`)  
 - “Update LEARNINGS only for major decisions”  
+- “Do not use git worktrees”  
 
-**Do not:** run multiple write-capable agents in the **same** folder on the same files; let agents expand design; commit straight to `main` without review.
+**Do not:** code or commit on `main`; run multiple write-capable agents stomping the same files uncoordinated; let agents expand design; invent worktree workflows for this repo.
 
 ### CI/CD (when code exists)
 

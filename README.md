@@ -11,7 +11,7 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 | Item | State |
 |------|--------|
 | Design (GDD) | **v0.3 — locked for prototype** |
-| Implementation | Not started (scaffold in a dedicated worktree) |
+| Implementation | Not started (scaffold on a feature branch) |
 | Target stack | Vite + TypeScript, pure sim core, local saves |
 
 ## Design pillars

@@ -10,25 +10,31 @@ This repo is a **design-locked prototype** of a turn-based Mars colony systems g
 4. Read **[AGENTS.md](AGENTS.md)** — hard rules + playbook.  
 5. Skim **[LEARNINGS.md](LEARNINGS.md)** — major “why” decisions only.  
 
-## Branch vs worktree (short)
+## Branches only
 
-| | **Branch** | **Worktree** |
-|--|------------|--------------|
-| What | A named line of commits (pointer in git) | A **second folder** checked out to a branch |
-| Use when | Always — every feature needs a branch | Parallel work without stashing (e.g. agent on feature A, you on `main`) |
-| Command sketch | `git checkout -b feat/…` | `git worktree add ../mcm-feat-x feat/x` |
+This project uses **feature branches in one working directory**. Do **not** use git worktrees here for now.
 
-You can have many branches and only one folder. Worktrees = many folders, each on a branch, **sharing one repo history**. Prefer **one mission per worktree**, then remove it after merge.
+```bash
+git checkout main
+git pull origin main
+git checkout -b feat/phase-1-scaffold
+# … work …
+# open PR → merge → then:
+git checkout main
+git pull origin main
+git branch -d feat/phase-1-scaffold
+```
+
+Switch missions by switching branches (commit or stash first). One branch per ROADMAP phase or focused fix.
 
 ## Workflow (solo or with agents)
 
-1. Create a branch named for the ROADMAP phase or feature (`feat/phase-1-scaffold`).  
-2. Optional: add a worktree if an agent or second task needs isolation.  
-3. Implement only that phase’s checklist.  
-4. Locally: `npm test` and `npm run build` (once scaffold exists).  
-5. Open a PR into `main` (even solo — good habit).  
-6. CI should pass when it exists; until then, don’t merge red local tests.  
-7. Merge → delete branch/worktree → log only **major** decisions in LEARNINGS.  
+1. From `main`, create a branch named for the ROADMAP phase or feature (`feat/phase-1-scaffold`).  
+2. Implement only that phase’s checklist on that branch (never on `main`).  
+3. Locally: `npm test` and `npm run build` (once scaffold exists).  
+4. Open a PR into `main` (even solo — good habit).  
+5. CI should pass when it exists; until then, don’t merge red local tests.  
+6. Merge → delete the feature branch → log only **major** decisions in LEARNINGS.  
 
 Detail: **Playbook** in [AGENTS.md](AGENTS.md).
 
