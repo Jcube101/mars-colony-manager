@@ -7,7 +7,7 @@
 | **Product** | Mars Colony Manager |
 | **Type** | Single-player browser game (turn-based systems / management) |
 | **Design ref** | [GDD.md](GDD.md) v0.3 |
-| **Spec version** | 0.1.0 (pre-implementation seed) |
+| **Spec version** | 0.1.1 (scaffold landed; folder tree active) |
 | **Goal** | Implement the locked GDD loop: monthly Earth requests, 2-month lag, ecosystem sim, report-centric UI, local saves |
 
 ## 2. Philosophy
@@ -27,6 +27,7 @@
 |-------|--------|--------|
 | Language | **TypeScript** (strict) | Shared types across sim and UI |
 | Bundler / dev | **Vite** | Fast dev server, static build |
+| Dev / preview port | **3004** (`strictPort`) | Frontend range 3001–3099; avoids Vite default 5173 |
 | Package manager | **npm** (default) | Lockfile committed once scaffold exists |
 | Unit tests | **Vitest** | Prefer pure sim tests |
 | Lint/format | Optional ESLint + Prettier | Add only if low friction |
