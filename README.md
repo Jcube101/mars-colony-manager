@@ -11,7 +11,7 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 | Item | State |
 |------|--------|
 | Design (GDD) | **v0.3 — locked for prototype** |
-| Implementation | Not started (scaffold on a feature branch) |
+| Implementation | Phase 1 scaffold (Vite + TS + Vitest) |
 | Target stack | Vite + TypeScript, pure sim core, local saves |
 
 ## Design pillars
@@ -36,16 +36,19 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 
 ## Quick start
 
-Implementation is not scaffolded yet. After the first Vite + TS scaffold:
+Requires Node.js 20+ and npm.
 
 ```bash
-# (planned)
 npm install
-npm run dev
-npm test
+npm run dev      # Vite dev server (http://localhost:3004)
+npm test         # Vitest (sim / unit tests)
+npm run build    # production build → dist/
+npm run preview  # serve the production build (also :3004)
 ```
 
-See [SPEC.md](SPEC.md) for the intended toolchain and [ROADMAP.md](ROADMAP.md) for phases.
+Dev port is **3004** (fixed; see `vite.config.ts`). Vite’s default 5173 is left free for other projects.
+
+See [SPEC.md](SPEC.md) for toolchain and folders, [ROADMAP.md](ROADMAP.md) for phases.
 
 ## High-level game loop
 

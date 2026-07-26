@@ -10,7 +10,7 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 - [x] Design Q&A trails (`QandA.md`, `QandA-systems.md`)
 - [x] Seed `README.md`, `AGENTS.md`, `ROADMAP.md`, `LEARNINGS.md`, `SPEC.md`
 - [x] Commit docs on main
-- [ ] Open `feat/phase-1-scaffold` (or equivalent) for implementation
+- [x] Open `feat/phase-1-scaffold` (or equivalent) for implementation
 
 ---
 
@@ -18,13 +18,13 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 *Goal: empty app boots; folders and tooling match SPEC; no real game yet.*
 
-- [ ] Vite + TypeScript (strict) project
-- [ ] Folder layout: `src/sim`, `src/data`, `src/ui`, `src/save`, `tests/sim`
-- [ ] Vitest wired (`npm test`)
-- [ ] Path aliases if useful (`@/sim`, `@/data`)
-- [ ] Placeholder `main.ts` + minimal HTML shell
-- [ ] ESLint/Prettier optional — only if low friction
-- [ ] Update README quick start with real commands
+- [x] Vite + TypeScript (strict) project
+- [x] Folder layout: `src/sim`, `src/data`, `src/ui`, `src/save`, `tests/sim`
+- [x] Vitest wired (`npm test`)
+- [x] Path aliases if useful (`@/sim`, `@/data`)
+- [x] Placeholder `main.ts` + minimal HTML shell
+- [x] ESLint/Prettier optional — only if low friction *(skipped for Phase 1)*
+- [x] Update README quick start with real commands
 
 **Exit criteria:** `npm run dev` and `npm test` succeed on a trivial assert.
 
