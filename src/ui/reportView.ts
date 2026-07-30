@@ -1,9 +1,11 @@
 /**
- * Monthly report sections per GDD §8.
+ * Monthly report sections per GDD §8 — trends, harvest line, empty states.
  */
 
+import { COPY } from '@/data/copy';
 import type { DecisionView, GameState, MonthReport } from '@/sim/types';
 import { listEstablishedSpecies } from '@/sim/winLoss';
+import { failureCopy } from '@/sim/report';
 import {
   earthWindowLabel,
   eventName,
@@ -23,6 +25,42 @@ import {
   waterChip,
 } from '@/ui/status';
 
+/** Snapshot for simple month-over-month trends (UI only). */
+export type VitalsSnapshot = {
+  food: number;
+  o2: number;
+  power: number;
+  morale: number;
+  grass: number;
+  algae: number;
+  insects: number;
+  rabbits: number;
+};
+
+export function snapshotFromState(state: GameState): VitalsSnapshot {
+  const c = state.colony;
+  const b = state.biome;
+  return {
+    food: c.food.units.reduce((s, u) => s + u.amount, 0),
+    o2: c.o2Buffer,
+    power: c.powerBuffer,
+    morale: c.morale,
+    grass: b.plants.grass,
+    algae: b.plants.algae,
+    insects: b.animals.insects,
+    rabbits: b.animals.rabbits,
+  };
+}
+
+function trend(cur: number, prev: number | undefined, digits = 0): string {
+  if (prev === undefined) return '';
+  const d = cur - prev;
+  if (Math.abs(d) < 0.05) return ' →';
+  const arrow = d > 0 ? '↑' : '↓';
+  const sign = d > 0 ? '+' : '';
+  return ` ${arrow}${sign}${fmt(d, digits)}`;
+}
+
 function chip(level: ReturnType<typeof foodChip>, text: string): string {
   return `<span class="${chipClass(level)}" title="${chipLabel(level)}">${text} · ${chipLabel(level)}</span>`;
 }
@@ -35,17 +73,22 @@ export function renderLastReport(report: MonthReport): string {
   const events =
     report.events.length > 0
       ? report.events.map((e) => eventName(e)).join(', ')
-      : 'Quiet month';
-  const losses =
+      : COPY.empty.noEvents;
+  const lossesHtml =
     report.losses.length > 0
       ? report.losses.map((l) => `<li>${escapeHtml(l)}</li>`).join('')
-      : '<li>None</li>';
+      : `<li class="empty-state">None</li>`;
   const arrivals =
     report.arrivals.length > 0
       ? report.arrivals
           .map((a) => `<li>${escapeHtml(shipmentLabel(a))} (${a.id})</li>`)
           .join('')
-      : '<li>None</li>';
+      : `<li class="empty-state">None</li>`;
+
+  const harvest =
+    report.harvestLine && report.harvestLine.length > 0
+      ? report.harvestLine
+      : COPY.empty.noHarvest;
 
   return `
     <section class="panel report" aria-labelledby="report-heading">
@@ -58,7 +101,7 @@ export function renderLastReport(report: MonthReport): string {
         </div>
         <div>
           <h3>Harvest</h3>
-          <p>${escapeHtml(report.harvestLine ?? '—')}</p>
+          <p class="harvest-line">${escapeHtml(harvest)}</p>
         </div>
       </div>
       <div class="grid-2">
@@ -68,15 +111,16 @@ export function renderLastReport(report: MonthReport): string {
         </div>
         <div>
           <h3>Losses</h3>
-          <ul>${losses}</ul>
+          <ul>${lossesHtml}</ul>
         </div>
       </div>
       <h3>Causes</h3>
-      <ul class="causes">${causes || '<li>No tagged causes</li>'}</ul>
+      <ul class="causes">${causes || `<li class="empty-state">${COPY.empty.noCauses}</li>`}</ul>
       <p class="meta-line">
         Eco food +${fmt(report.ecosystemFoodHarvested)} FU ·
-        O₂ prod ${fmt(report.o2Produced)} / use ${fmt(report.o2Consumed)} ·
-        Self-suff food ${report.foodSelfSufficient ? 'yes' : 'no'} ·
+        O₂ prod ${fmt(report.o2Produced)} / use ${fmt(report.o2Consumed)}
+        ${report.o2Produced >= report.o2Consumed && report.o2Consumed > 0 ? ' · <span class="chip chip--stable">O₂ covered</span>' : ''}
+        · Self-suff food ${report.foodSelfSufficient ? 'yes' : 'no'} ·
         O₂ ${report.o2SelfSufficient ? 'yes' : 'no'} ·
         Species: ${report.establishedSpecies.map(speciesName).join(', ') || 'none'}
       </p>
@@ -87,6 +131,7 @@ export function renderLastReport(report: MonthReport): string {
 export function renderDecisionBrief(
   state: GameState,
   view: DecisionView,
+  prev?: VitalsSnapshot | null,
 ): string {
   const c = view.colony;
   const b = view.biome;
@@ -100,17 +145,32 @@ export function renderDecisionBrief(
       ? view.pendingShipments
           .map((s) => {
             const eta = s.arrivesMonth - view.month;
-            return `<li><strong>${escapeHtml(shipmentLabel(s))}</strong> — arrives month ${s.arrivesMonth} (${eta} mo)${s.rushed ? ' · rushed' : ''} <span class="muted">[${s.id}]</span></li>`;
+            const etaLabel =
+              eta <= 0
+                ? 'due'
+                : eta === 1
+                  ? 'next month'
+                  : `in ${eta} months`;
+            return `<li><strong>${escapeHtml(shipmentLabel(s))}</strong> — arrives month ${s.arrivesMonth} (${etaLabel})${s.rushed ? ' · rushed' : ''} <span class="muted">[${s.id}]</span></li>`;
           })
           .join('')
-      : '<li>No pending shipments</li>';
+      : `<li class="empty-state">${COPY.empty.noPending}</li>`;
 
   const arrivals =
     view.arrivals.length > 0
       ? view.arrivals
           .map((a) => `<li>${escapeHtml(shipmentLabel(a))} delivered</li>`)
           .join('')
-      : '<li>None this morning</li>';
+      : `<li class="empty-state">${COPY.empty.noArrivals}</li>`;
+
+  const foodTrend = trend(foodTotal, prev?.food, 1);
+  const o2Trend = trend(c.o2Buffer, prev?.o2, 1);
+  const powerTrend = trend(c.powerBuffer, prev?.power, 1);
+  const moraleTrend = trend(c.morale, prev?.morale, 0);
+  const grassTrend = trend(b.plants.grass, prev?.grass, 0);
+  const algaeTrend = trend(b.plants.algae, prev?.algae, 0);
+  const insectTrend = trend(b.animals.insects, prev?.insects, 0);
+  const rabbitTrend = trend(b.animals.rabbits, prev?.rabbits, 0);
 
   return `
     <section class="panel brief" aria-labelledby="brief-heading">
@@ -120,17 +180,17 @@ export function renderDecisionBrief(
           <p class="muted">
             ${view.monthsRemaining} month(s) remaining ·
             Earth: ${earthWindowLabel(view.earthWindow)} ·
-            Seed ${state.meta.seed}
+            Seed <strong>${state.meta.seed}</strong>
           </p>
         </div>
       </header>
 
-      <h3>Colony vitals</h3>
+      <h3>Colony vitals${prev ? ' <span class="muted">(Δ vs last brief)</span>' : ''}</h3>
       <div class="chips">
-        ${chip(foodChip(c), `Food ${fmt(foodTotal)} FU`)}
-        ${chip(o2Chip(c), `O₂ ${fmt(c.o2Buffer)}`)}
-        ${chip(powerChip(c), `Power ${fmt(c.powerBuffer)}`)}
-        ${chip(moraleChip(c.morale), `Morale ${fmt(c.morale, 0)}`)}
+        ${chip(foodChip(c), `Food ${fmt(foodTotal)} FU${foodTrend}`)}
+        ${chip(o2Chip(c), `O₂ ${fmt(c.o2Buffer)}${o2Trend}`)}
+        ${chip(powerChip(c), `Power ${fmt(c.powerBuffer)}${powerTrend}`)}
+        ${chip(moraleChip(c.morale), `Morale ${fmt(c.morale, 0)}${moraleTrend}`)}
         ${chip(waterChip(b.water, c.waterReserve), `Water ${fmt(b.water, 0)} / res ${fmt(c.waterReserve, 0)}`)}
       </div>
       <p class="meta-line">
@@ -143,8 +203,8 @@ export function renderDecisionBrief(
       <h3>Ecosystem</h3>
       <ul class="eco-list">
         <li>Soil ${soilLabel(b.soil)} · Biome water ${fmt(b.water, 0)}</li>
-        <li>Grass ${fmt(b.plants.grass, 0)} · Algae ${fmt(b.plants.algae, 0)} · Trees ${fmt(treeD, 0)} (${b.plants.trees.length} cohort)</li>
-        <li>Insects ${b.animals.insects} · Rabbits ${b.animals.rabbits} · Deer ${b.animals.deer} · Wolves ${b.animals.wolves}</li>
+        <li>Grass ${fmt(b.plants.grass, 0)}${grassTrend} · Algae ${fmt(b.plants.algae, 0)}${algaeTrend} · Trees ${fmt(treeD, 0)} (${b.plants.trees.length} cohort)</li>
+        <li>Insects ${b.animals.insects}${insectTrend} · Rabbits ${b.animals.rabbits}${rabbitTrend} · Deer ${b.animals.deer} · Wolves ${b.animals.wolves}</li>
         <li>Mycelium ${fmt(b.mycelium, 0)} · O₂ last month ${fmt(b.o2ProductionLastMonth)}</li>
         <li>Established: ${established.map(speciesName).join(', ') || 'none'} (${established.length}/4 for win)</li>
       </ul>
@@ -157,7 +217,11 @@ export function renderDecisionBrief(
         <div>
           <h3>Outlook</h3>
           <ul>${pending}</ul>
-          ${view.forecast ? `<p class="forecast">${escapeHtml(view.forecast)}</p>` : '<p class="muted">No soft forecast.</p>'}
+          ${
+            view.forecast
+              ? `<p class="forecast">${escapeHtml(view.forecast)}</p>`
+              : `<p class="muted empty-state">No soft forecast this month.</p>`
+          }
           ${view.lastEvents.length ? `<p class="muted">Prior events: ${view.lastEvents.map(eventName).join(', ')}</p>` : ''}
         </div>
       </div>
@@ -168,10 +232,15 @@ export function renderDecisionBrief(
 export function renderGameOver(state: GameState, report: MonthReport | null): string {
   const won = state.outcome === 'won';
   const established = listEstablishedSpecies(state);
+  const reason = state.lossReason ?? report?.lossReason;
   const timeline = state.history.timeline
     .slice(-8)
     .map((t) => `<li>M${t.month}: ${escapeHtml(t.summary)}</li>`)
     .join('');
+
+  const failureDetail = won
+    ? ''
+    : `<p class="failure-detail">${escapeHtml(failureCopy(reason))}</p>`;
 
   return `
     <section class="panel game-over" aria-labelledby="end-heading">
@@ -179,16 +248,17 @@ export function renderGameOver(state: GameState, report: MonthReport | null): st
       <p class="headline">
         ${won
           ? `${escapeHtml(state.meta.colonyName)} reached self-sufficiency.`
-          : `${escapeHtml(state.meta.colonyName)} failed — ${escapeHtml(state.lossReason ?? report?.lossReason ?? 'unknown')}.`}
+          : `${escapeHtml(state.meta.colonyName)} failed.`}
       </p>
+      ${failureDetail}
       <p class="meta-line">
-        Final month ${state.calendar.month} · Seed <strong>${state.meta.seed}</strong> ·
+        Final month ${state.calendar.month} · Seed <strong class="seed-display">${state.meta.seed}</strong> ·
         Pop ${state.colony.population} · Established ${established.length}: ${established.map(speciesName).join(', ') || 'none'}
       </p>
       ${report ? `<p class="muted">${escapeHtml(report.headline)}</p>` : ''}
       <h3>Timeline</h3>
-      <ul>${timeline || '<li>No major beats recorded</li>'}</ul>
-      <p class="muted">Share the seed to replay this run.</p>
+      <ul>${timeline || `<li class="empty-state">${COPY.empty.noTimeline}</li>`}</ul>
+      <p class="muted">Share the seed to replay this run. Actions still decide the story.</p>
     </section>
   `;
 }

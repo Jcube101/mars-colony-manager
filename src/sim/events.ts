@@ -181,11 +181,12 @@ export function resolveEvents(
 
   state.flags.lastEvents = eventId === 'quiet' ? [] : [eventId];
 
+  // Soft one-month forecast on ~50% of months for major weather (GDD)
   let forecast: string | undefined;
   const majors = EVENT_LIST.filter((e) => e.forecastable);
   if (rng.chance(EVENT_FORECAST_CHANCE) && majors.length > 0) {
     const f = majors[rng.nextInt(majors.length)]!;
-    forecast = `Sensors: elevated risk of ${f.name.toLowerCase()} next month (unconfirmed).`;
+    forecast = `Soft forecast (~50%): elevated risk of ${f.name.toLowerCase()} next month — unconfirmed. Plan cargo around the lag, not the weather.`;
   }
   state.forecast = forecast;
 

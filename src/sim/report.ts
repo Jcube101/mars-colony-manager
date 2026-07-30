@@ -3,6 +3,7 @@
  */
 
 import { COPY } from '@/data/copy';
+import type { EventId } from '@/data/events';
 import type {
   CauseTag,
   GameState,
@@ -11,7 +12,6 @@ import type {
   RunOutcome,
   SpeciesId,
 } from '@/sim/types';
-import type { EventId } from '@/data/events';
 
 export type { CauseTag, MonthReport } from '@/sim/types';
 
@@ -52,13 +52,11 @@ export type BuildReportInput = {
 };
 
 export function buildMonthReport(input: BuildReportInput): MonthReport {
-  const headline = pickHeadline(input);
-
   return {
     month: input.month,
-    headline,
+    headline: pickHeadline(input),
     causes: input.causes,
-    harvestLine: input.harvestLine,
+    harvestLine: input.harvestLine || COPY.empty.noHarvest,
     events: input.events,
     arrivals: input.arrivals,
     losses: input.losses,
@@ -73,29 +71,52 @@ export function buildMonthReport(input: BuildReportInput): MonthReport {
   };
 }
 
+export function failureCopy(lossReason?: string): string {
+  if (!lossReason) return COPY.failure.unknown;
+  return COPY.failure[lossReason] ?? COPY.failure.unknown;
+}
+
 function pickHeadline(input: BuildReportInput): string {
+  const name = input.state.meta.colonyName;
+
   if (input.outcome === 'won') {
-    return `${input.state.meta.colonyName}: self-sufficient — Earth will toast you.`;
+    return `${name}: self-sufficient — Earth will toast you.`;
   }
   if (input.outcome === 'lost') {
-    return `${input.state.meta.colonyName}: colony life support failed.`;
+    const key = input.lossReason ?? 'default';
+    return (
+      COPY.lossHeadlines[key] ??
+      COPY.lossHeadlines.default ??
+      `${name}: colony life support failed.`
+    );
   }
   if (input.events.includes('dust')) {
-    return 'Dust storm month — power and O₂ stressed.';
+    return 'Dust storm month — power and O₂ production stressed.';
   }
   if (input.events.includes('cold')) {
-    return 'Cold snap across the dome — algae complains.';
+    return 'Cold snap across the dome — algae and food need under pressure.';
+  }
+  if (input.events.includes('solar_flare')) {
+    return 'Solar flare: next Earth request will ship a month late.';
+  }
+  if (input.events.includes('blight')) {
+    return 'Blight struck the web — check which population was cut.';
+  }
+  if (input.events.includes('illness')) {
+    return 'Illness aboard — elevated food need, thinner harvest labor.';
   }
   if (input.losses.length > 0) {
-    return 'Transit loss reported — cargo did not arrive.';
+    return 'Transit loss reported — cargo did not arrive. Re-plan the lag.';
   }
   if (input.arrivals.length > 0) {
-    return 'Arrivals processed — greenhouse composition shifted.';
+    return 'Arrivals processed — greenhouse composition shifted. Look two months ahead.';
   }
   if (input.ecosystemFoodHarvested > 0) {
-    return 'Local harvest on the table — web is feeding someone.';
+    return 'Local harvest on the table — the web is starting to feed you.';
   }
-  // Deterministic pick from starter headlines by month
+  if (input.foodSelfSufficient && input.o2SelfSufficient) {
+    return 'Clean month: ecosystem food and O₂ covered demand. Streak matters.';
+  }
   const idx = (input.month - 1) % COPY.headlines.length;
   return COPY.headlines[idx]!;
 }

@@ -3,6 +3,7 @@
  * Prefer: Deer → Fruit → Rabbits → Insects → Wolves.
  */
 
+import { HARVEST } from '@/data/balance';
 import { SPECIES } from '@/data/species';
 import { addHarvestFood, isFoodCritical } from '@/sim/shipments';
 import { fruitAvailable } from '@/sim/ecosystem';
@@ -31,11 +32,10 @@ export function maxHarvestable(
 ): number {
   if (population <= 0) return 0;
   if (foodCritical) {
-    // Emergency harvest may include wolves and cut deeper
-    return Math.max(0, Math.floor(population * 0.5));
+    return Math.max(0, Math.floor(population * HARVEST.emergencyFraction));
   }
   const reserve = Math.max(reserveFloor, Math.floor(population * 0.1));
-  const byPct = Math.floor(population * 0.25);
+  const byPct = Math.floor(population * HARVEST.maxFraction);
   return Math.max(0, Math.min(byPct, population - reserve));
 }
 
@@ -45,7 +45,7 @@ export function harvestLabor(
   illness: boolean,
 ): number {
   const moraleF = clamp(state.colony.morale / 100, 0.25, 1.2);
-  let labor = state.colony.population * moraleF * 1.5; // BALANCE
+  let labor = state.colony.population * moraleF * HARVEST.laborPerColonist;
   if (state.flags.workStoppage) labor *= 0.5;
   if (illness) labor *= 0.7;
   return labor;
@@ -174,7 +174,7 @@ export function runHarvest(
   const harvestLine =
     parts.length > 0
       ? `Harvest: ${parts.join('; ')}. Floors ${floorsRespected ? 'respected' : 'relaxed (critical/emergency)'}.`
-      : 'Harvest: none (no eligible biomass or no labor). Floors respected.';
+      : 'Harvest: none — no eligible biomass or no labor. Floors respected.';
 
   return {
     state,

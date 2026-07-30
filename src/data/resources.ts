@@ -50,7 +50,7 @@ export const RESOURCES: Record<ResourceId, ResourcePackage> = {
     id: 'power',
     name: 'Power cells',
     description: 'Stored energy for life support and grow-lights.',
-    packageAmount: 30, // BALANCE — ~2–3 months normal buffer
+    packageAmount: 34, // BALANCE — ~2–3 months normal buffer
     packageSummary: '~2–3 months of normal power buffer',
   },
 };
