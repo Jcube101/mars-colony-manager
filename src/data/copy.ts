@@ -6,7 +6,7 @@
 export const COPY = {
   appTitle: 'Mars Colony Manager',
   defaultColonyName: 'Hephaestus',
-  scaffoldHeadline: 'Headless month pipeline online. UI vertical slice is Phase 4.',
+  scaffoldHeadline: 'Playable vertical slice — one action per month.',
 
   /** Generic / starter report headlines. */
   headlines: [

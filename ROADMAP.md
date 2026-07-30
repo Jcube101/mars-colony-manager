@@ -70,14 +70,14 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 *Goal: a human can play the real loop in the browser (ugly is fine).*
 
-- [ ] Bind UI to sim state + report (vanilla TS + CSS)
-- [ ] Monthly report sections per GDD (vitals, ecosystem, events, arrivals, outlook, action)
-- [ ] Action chooser: species / resource / emergency / stand by
-- [ ] Pending shipments + months remaining + Earth support status
-- [ ] Status chips: Stable / Watch / Critical
-- [ ] New game (name colony, optional seed display)
-- [ ] End-run summary + seed display
-- [ ] `?debug=1` basics: force event, set population, jump month (dev only)
+- [x] Bind UI to sim state + report (vanilla TS + CSS)
+- [x] Monthly report sections per GDD (vitals, ecosystem, events, arrivals, outlook, action)
+- [x] Action chooser: species / resource / emergency / stand by
+- [x] Pending shipments + months remaining + Earth support status
+- [x] Status chips: Stable / Watch / Critical
+- [x] New game (name colony, optional seed display)
+- [x] End-run summary + seed display
+- [x] `?debug=1` basics: force event, set population, jump month (dev only)
 
 **Exit criteria:** stranger can complete or fail a run without opening devtools.
 
