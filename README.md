@@ -6,14 +6,21 @@ You are the off-world liaison. Each month you choose a single action (species, r
 
 This is a **browser, turn-based systems game** — lagged decisions over a living ecosystem, not real-time colony micromanagement.
 
+## Play
+
+| | |
+|--|--|
+| **Production** | **https://mars.job-joseph.com** |
+| Local dev | `npm run dev` → http://localhost:3004 |
+
 ## Status
 
 | Item | State |
 |------|--------|
 | Design (GDD) | **v0.3 — locked for prototype** |
 | Implementation | **Playable prototype** (Phases 1–7 polish) |
+| Production host | jobpi self-host — see [DEPLOY.md](DEPLOY.md) |
 | Target stack | Vite + TypeScript, pure sim core, local saves |
-| Share / deploy | Build `dist/` — see [DEPLOY.md](DEPLOY.md) (ask before public deploy) |
 
 ## Design pillars
 
@@ -36,7 +43,7 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 | [QandA.md](QandA.md) | Design Q&A trail (round 1) |
 | [QandA-systems.md](QandA-systems.md) | Systems Q&A trail (round 2, locked) |
 | [PLAYTEST.md](PLAYTEST.md) | Playtest notes |
-| [DEPLOY.md](DEPLOY.md) | Static / itch / Pages packaging |
+| [DEPLOY.md](DEPLOY.md) | **Primary:** jobpi self-host; optional itch/Pages |
 
 ## Quick start
 
@@ -51,6 +58,8 @@ npm run preview  # serve the production build (also :3004)
 ```
 
 Dev port is **3004** (fixed; see `vite.config.ts`). Vite’s default 5173 is left free for other projects.
+
+Production redeploy on jobpi: `bash scripts/deploy-jobpi.sh` (see [DEPLOY.md](DEPLOY.md)).
 
 See [SPEC.md](SPEC.md) for toolchain and folders, [ROADMAP.md](ROADMAP.md) for phases.
 

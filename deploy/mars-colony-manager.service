@@ -1,0 +1,26 @@
+[Unit]
+Description=Mars Colony Manager — static dist on 127.0.0.1:8018
+Documentation=https://github.com/Jcube101/mars-colony-manager/blob/main/DEPLOY.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jcube
+Group=jcube
+WorkingDirectory=/home/jcube/projects/mars-colony-manager
+
+# Pure static SPA: no backend, no env secrets. Bind localhost only —
+# Cloudflare Tunnel (pi-home) reaches this; do not use 0.0.0.0.
+ExecStart=/usr/bin/python3 -m http.server 8018 --bind 127.0.0.1 --directory /home/jcube/projects/mars-colony-manager/dist
+
+Restart=always
+RestartSec=5
+SuccessExitStatus=SIGTERM SIGINT 143
+
+# Hardening (system unit under root; safe for static file serve)
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
