@@ -109,7 +109,7 @@ npm test
 - `ROADMAP.md` — phases and checklists  
 - `LEARNINGS.md` — major decision Q&A only  
 - `CONTRIBUTING.md` — human/agent contribution workflow  
-- `PROMPTS.md` — copy-paste implement / close-phase prompts  
+- `PROMPTS.md` — local only (gitignored); personal implement / close-phase prompts  
 - `QandA.md` / `QandA-systems.md` — historical design trails  
 - This file — agent rules + Playbook  
 

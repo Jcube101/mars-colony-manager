@@ -37,7 +37,7 @@ Switch missions by switching branches (commit or stash first). One branch per RO
 6. Merge → delete the feature branch → log only **major** decisions in LEARNINGS.  
 
 Detail: **Playbook** in [AGENTS.md](AGENTS.md).  
-**Copy-paste prompts** for each phase and for commit/PR/merge: [PROMPTS.md](PROMPTS.md).
+**Copy-paste prompts** (optional, personal): local `PROMPTS.md` — **gitignored**, not part of the repo.
 
 ## Pull requests
 
