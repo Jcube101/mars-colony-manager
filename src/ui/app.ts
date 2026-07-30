@@ -24,6 +24,10 @@ import {
   snapshotFromState,
   type VitalsSnapshot,
 } from '@/ui/reportView';
+import {
+  bindAmbientToggle,
+  renderAmbientToggle,
+} from '@/ui/ambient';
 import { bindSavePanel, renderSavePanel } from '@/ui/saveView';
 import { renderTutorialPanel } from '@/ui/tutorial';
 
@@ -54,10 +58,29 @@ export function mountApp(root: HTMLElement): void {
   render(root);
 }
 
+function renderHeader(): string {
+  return `
+    <header class="app-header">
+      <div class="app-header-text">
+        <h1><span class="logo" aria-hidden="true"></span> ${COPY.appTitle}</h1>
+        <p class="tagline">${COPY.tagline}</p>
+      </div>
+      <div class="header-actions">
+        ${renderAmbientToggle()}
+      </div>
+    </header>
+  `;
+}
+
+function bindChrome(root: HTMLElement): void {
+  bindAmbientToggle(root);
+}
+
 function render(root: HTMLElement): void {
   if (model.screen === 'new_game') {
     root.innerHTML = renderNewGame();
     bindNewGame(root);
+    bindChrome(root);
     bindSavePanel(root, {
       onLoad: (state, lastReport) => resumeFromSave(root, state, lastReport),
       onMessage: (msg, kind) => {
@@ -71,9 +94,7 @@ function render(root: HTMLElement): void {
   if (model.screen === 'ended' && model.state) {
     root.innerHTML = `
       <div class="app">
-        <header class="app-header">
-          <h1>${COPY.appTitle}</h1>
-        </header>
+        ${renderHeader()}
         ${flashHtml()}
         ${renderGameOver(model.state, model.lastReport)}
         <section class="panel">
@@ -85,6 +106,7 @@ function render(root: HTMLElement): void {
         <p class="center">
           <button type="button" class="btn btn-primary" id="btn-new-run">New run</button>
         </p>
+        <p class="footer-note">Mars Colony Manager · prototype build · local only</p>
       </div>
     `;
     root.querySelector('#btn-new-run')?.addEventListener('click', () => {
@@ -96,6 +118,7 @@ function render(root: HTMLElement): void {
       clearFlash();
       render(root);
     });
+    bindChrome(root);
     bindSavePanel(root, {
       onLoad: (state, lastReport) => resumeFromSave(root, state, lastReport),
       onMessage: (msg, kind) => {
@@ -128,10 +151,7 @@ function render(root: HTMLElement): void {
 
   root.innerHTML = `
     <div class="app">
-      <header class="app-header">
-        <h1>${COPY.appTitle}</h1>
-        <p class="tagline">${COPY.tagline}</p>
-      </header>
+      ${renderHeader()}
       ${flashHtml()}
       ${renderTutorialPanel(model.view)}
       ${reportHtml}
@@ -139,9 +159,11 @@ function render(root: HTMLElement): void {
       ${renderActionChooser(model.view)}
       ${renderSavePanel({ inGame: true })}
       ${renderDebugPanel(model.state)}
+      <p class="footer-note">Mars Colony Manager · prototype build · port 3004</p>
     </div>
   `;
 
+  bindChrome(root);
   bindActionChooser(root, model.view, (action) => {
     submitAction(root, action);
   });
@@ -194,10 +216,7 @@ function renderNewGame(): string {
   const defaultSeed = Math.floor(Date.now() % 1_000_000_000);
   return `
     <div class="app">
-      <header class="app-header">
-        <h1>${COPY.appTitle}</h1>
-        <p class="tagline">${COPY.tagline}</p>
-      </header>
+      ${renderHeader()}
       ${flashHtml()}
       <section class="panel new-game" aria-labelledby="new-heading">
         <h2 id="new-heading">New game</h2>
@@ -214,6 +233,7 @@ function renderNewGame(): string {
         ${isDebugEnabled() ? '<p class="chip chip--watch">Debug mode on (?debug=1)</p>' : ''}
       </section>
       ${renderSavePanel({ inGame: false })}
+      <p class="footer-note">Shareable static build — see DEPLOY.md. Ambient audio is off until you enable it.</p>
     </div>
   `;
 }

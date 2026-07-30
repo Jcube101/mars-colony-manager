@@ -108,16 +108,31 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 ---
 
-## Phase 7 — Polish & package (post-prototype)
+## Phase 7 — Polish & package (post-prototype) ✅
 
 *Only after the loop feels fair and legible.*
 
-- [ ] Visual pass (icons, light illustration optional)
-- [ ] Ambient audio (optional loop)
-- [ ] Performance pass if needed (should be unnecessary at this scale)
-- [ ] itch.io / static deploy
-- [ ] Optional letter grade on win
-- [ ] Optional achievements / light telemetry
+- [x] Visual pass (icons, light illustration optional)
+- [x] Ambient audio (optional loop) — mute toggle; off by default
+- [x] Performance pass if needed (should be unnecessary at this scale) — N/A; build stays small
+- [x] Shareable static package — `dist/` + [DEPLOY.md](DEPLOY.md) (itch/Pages optional; not required to close)
+- [ ] Optional letter grade on win *(deferred — not requested)*
+- [ ] Optional achievements / light telemetry *(deferred — not requested)*
+
+**Exit criteria met:** shareable `dist/` build; loop still fair/legible. Public host deferred to Phase 8.
+
+---
+
+## Phase 8 — Self-host production (jobpi)
+
+*Canonical production host (not itch/Pages by default).*
+
+- [ ] Serve static `dist/` at **mars.job-joseph.com**
+- [ ] Host on **jobpi** via reverse proxy / static server on port **8018**
+- [ ] Deploy path: green `main` → build → publish to jobpi (document exact steps)
+- [ ] Health check / smoke after deploy
+
+**Non-goals for Phase 8:** new game systems, backend game server, auth.
 
 ---
 

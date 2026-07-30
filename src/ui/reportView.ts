@@ -15,6 +15,7 @@ import {
   soilLabel,
   speciesName,
 } from '@/ui/format';
+import { ICONS } from '@/ui/icons';
 import {
   chipClass,
   chipLabel,
@@ -61,8 +62,12 @@ function trend(cur: number, prev: number | undefined, digits = 0): string {
   return ` ${arrow}${sign}${fmt(d, digits)}`;
 }
 
-function chip(level: ReturnType<typeof foodChip>, text: string): string {
-  return `<span class="${chipClass(level)}" title="${chipLabel(level)}">${text} · ${chipLabel(level)}</span>`;
+function chip(
+  level: ReturnType<typeof foodChip>,
+  icon: string,
+  text: string,
+): string {
+  return `<span class="${chipClass(level)}" title="${chipLabel(level)}"><span aria-hidden="true">${icon}</span> ${text} · ${chipLabel(level)}</span>`;
 }
 
 export function renderLastReport(report: MonthReport): string {
@@ -187,11 +192,11 @@ export function renderDecisionBrief(
 
       <h3>Colony vitals${prev ? ' <span class="muted">(Δ vs last brief)</span>' : ''}</h3>
       <div class="chips">
-        ${chip(foodChip(c), `Food ${fmt(foodTotal)} FU${foodTrend}`)}
-        ${chip(o2Chip(c), `O₂ ${fmt(c.o2Buffer)}${o2Trend}`)}
-        ${chip(powerChip(c), `Power ${fmt(c.powerBuffer)}${powerTrend}`)}
-        ${chip(moraleChip(c.morale), `Morale ${fmt(c.morale, 0)}${moraleTrend}`)}
-        ${chip(waterChip(b.water, c.waterReserve), `Water ${fmt(b.water, 0)} / res ${fmt(c.waterReserve, 0)}`)}
+        ${chip(foodChip(c), ICONS.food, `Food ${fmt(foodTotal)} FU${foodTrend}`)}
+        ${chip(o2Chip(c), ICONS.o2, `O₂ ${fmt(c.o2Buffer)}${o2Trend}`)}
+        ${chip(powerChip(c), ICONS.power, `Power ${fmt(c.powerBuffer)}${powerTrend}`)}
+        ${chip(moraleChip(c.morale), ICONS.morale, `Morale ${fmt(c.morale, 0)}${moraleTrend}`)}
+        ${chip(waterChip(b.water, c.waterReserve), ICONS.water, `Water ${fmt(b.water, 0)} / res ${fmt(c.waterReserve, 0)}`)}
       </div>
       <p class="meta-line">
         Pop ${pop} / habitat ${c.habitatCapacity}
@@ -243,8 +248,8 @@ export function renderGameOver(state: GameState, report: MonthReport | null): st
     : `<p class="failure-detail">${escapeHtml(failureCopy(reason))}</p>`;
 
   return `
-    <section class="panel game-over" aria-labelledby="end-heading">
-      <h2 id="end-heading">${won ? 'Victory' : 'Colony lost'}</h2>
+    <section class="panel game-over ${won ? 'game-over--win' : 'game-over--loss'}" aria-labelledby="end-heading">
+      <h2 id="end-heading">${won ? `${ICONS.win} Victory` : `${ICONS.loss} Colony lost`}</h2>
       <p class="headline">
         ${won
           ? `${escapeHtml(state.meta.colonyName)} reached self-sufficiency.`

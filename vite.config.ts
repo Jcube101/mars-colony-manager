@@ -4,6 +4,8 @@ import { fileURLToPath, URL } from 'node:url';
 const src = fileURLToPath(new URL('./src', import.meta.url));
 
 export default defineConfig({
+  // Relative base so dist/ is portable (itch.io zip, file hosts, subpaths).
+  base: './',
   resolve: {
     alias: {
       '@': src,
@@ -17,6 +19,10 @@ export default defineConfig({
   preview: {
     port: 3004,
     strictPort: true,
+  },
+  build: {
+    target: 'es2022',
+    sourcemap: false,
   },
   test: {
     include: ['tests/**/*.test.ts'],

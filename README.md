@@ -11,8 +11,9 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 | Item | State |
 |------|--------|
 | Design (GDD) | **v0.3 — locked for prototype** |
-| Implementation | Phase 1 scaffold (Vite + TS + Vitest) |
+| Implementation | **Playable prototype** (Phases 1–7 polish) |
 | Target stack | Vite + TypeScript, pure sim core, local saves |
+| Share / deploy | Build `dist/` — see [DEPLOY.md](DEPLOY.md) (ask before public deploy) |
 
 ## Design pillars
 
@@ -34,6 +35,8 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 | [LEARNINGS.md](LEARNINGS.md) | Major decision log only (Q&A) |
 | [QandA.md](QandA.md) | Design Q&A trail (round 1) |
 | [QandA-systems.md](QandA-systems.md) | Systems Q&A trail (round 2, locked) |
+| [PLAYTEST.md](PLAYTEST.md) | Playtest notes |
+| [DEPLOY.md](DEPLOY.md) | Static / itch / Pages packaging |
 
 ## Quick start
 

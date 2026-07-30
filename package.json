@@ -1,7 +1,7 @@
 {
   "name": "mars-colony-manager",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.7.0",
   "type": "module",
   "description": "Browser turn-based Mars colony systems game",
   "scripts": {
@@ -9,7 +9,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "package:itch": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
