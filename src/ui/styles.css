@@ -318,6 +318,55 @@ ul {
   font-size: 0.85rem;
 }
 
+.tutorial {
+  border-color: var(--focus);
+  background: #152030;
+}
+
+.tutorial-steps {
+  margin: 0.4rem 0 0.6rem;
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+}
+
+.tutorial-steps li {
+  margin-bottom: 0.35rem;
+}
+
+.tutorial-callout {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.65rem;
+  background: #1c2a1c;
+  border-left: 3px solid var(--stable);
+  font-size: 0.92rem;
+}
+
+.harvest-line {
+  font-weight: 600;
+}
+
+.empty-state {
+  color: var(--muted);
+  font-style: italic;
+  list-style: none;
+  margin-left: -0.25rem;
+}
+
+.failure-detail {
+  color: #ffb4a8;
+  margin: 0.35rem 0 0.75rem;
+}
+
+.forecast {
+  font-style: italic;
+  color: var(--watch);
+  margin: 0.4rem 0;
+  padding: 0.4rem 0.55rem;
+  border: 1px dashed var(--watch);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

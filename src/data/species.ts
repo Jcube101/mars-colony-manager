@@ -53,8 +53,8 @@ export const SPECIES: Record<SpeciesId, SpeciesCard> = {
     kind: 'plant',
     role: 'Base forage / plant biomass',
     notes: 'Required for rabbits/deer; needs water + light/power',
-    seedSize: 40, // BALANCE — large mat
-    growthRate: 0.08, // BALANCE
+    seedSize: 42, // BALANCE — large mat
+    growthRate: 0.09, // BALANCE
     establishmentFloor: 10, // BALANCE
     requires: ['water', 'power'],
   },
@@ -64,8 +64,8 @@ export const SPECIES: Record<SpeciesId, SpeciesCard> = {
     kind: 'plant',
     role: 'O₂ + soft biomass',
     notes: 'Water + light; cold-fragile',
-    seedSize: 22, // BALANCE — medium
-    growthRate: 0.07, // BALANCE
+    seedSize: 24, // BALANCE — medium; first-producer tutorial default
+    growthRate: 0.085, // BALANCE
     establishmentFloor: 8, // BALANCE
     requires: ['water', 'power'],
   },
@@ -75,10 +75,10 @@ export const SPECIES: Record<SpeciesId, SpeciesCard> = {
     kind: 'animal',
     role: 'Fast ++ food',
     notes: 'Waste/nutrients/soft plants; boom risk',
-    seedSize: 80, // BALANCE — medium-high head count
-    growthRate: 0.12, // BALANCE
+    seedSize: 90, // BALANCE — medium-high head count
+    growthRate: 0.13, // BALANCE
     harvestTier: '++',
-    harvestYieldFu: 0.05, // BALANCE — FU per head harvested
+    harvestYieldFu: 0.06, // BALANCE — FU per head harvested
     establishmentFloor: 15, // BALANCE
     requires: ['nutrients', 'plants'],
   },
@@ -88,10 +88,10 @@ export const SPECIES: Record<SpeciesId, SpeciesCard> = {
     kind: 'animal',
     role: '+++ food; grazers',
     notes: 'Need grass; can overgraze',
-    seedSize: 18, // BALANCE — medium
-    growthRate: 0.09, // BALANCE
+    seedSize: 20, // BALANCE — medium
+    growthRate: 0.1, // BALANCE
     harvestTier: '+++',
-    harvestYieldFu: 0.8, // BALANCE
+    harvestYieldFu: 0.85, // BALANCE
     establishmentFloor: 6, // BALANCE
     requires: ['grass'],
   },

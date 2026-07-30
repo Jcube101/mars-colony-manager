@@ -36,7 +36,7 @@ export const EVENTS: Record<EventId, EventCard> = {
     id: 'quiet',
     name: 'Quiet month',
     severity: 'none',
-    weight: 40, // BALANCE
+    weight: 42, // BALANCE — quiet months common early
     summary: 'No named event.',
     forecastable: false,
   },
@@ -44,7 +44,7 @@ export const EVENTS: Record<EventId, EventCard> = {
     id: 'dust',
     name: 'Dust storm',
     severity: 'major',
-    weight: 8, // BALANCE
+    weight: 7, // BALANCE
     summary: 'Power −, O₂ production −, outdoor growth −.',
     forecastable: true,
   },
@@ -52,7 +52,7 @@ export const EVENTS: Record<EventId, EventCard> = {
     id: 'cold',
     name: 'Cold snap',
     severity: 'major',
-    weight: 8, // BALANCE
+    weight: 7, // BALANCE
     summary: 'Food need +, algae growth −.',
     forecastable: true,
   },
@@ -68,7 +68,7 @@ export const EVENTS: Record<EventId, EventCard> = {
     id: 'blight',
     name: 'Blight',
     severity: 'major',
-    weight: 6, // BALANCE
+    weight: 5, // BALANCE
     summary: 'Hard cut to one species.',
     forecastable: false,
   },
@@ -76,7 +76,7 @@ export const EVENTS: Record<EventId, EventCard> = {
     id: 'illness',
     name: 'Illness',
     severity: 'minor',
-    weight: 10, // BALANCE — overcrowding / low morale raise this in Phase 3
+    weight: 9, // BALANCE — overcrowding / low morale raise this in pipeline
     summary: 'Minor; +food need, −labor that month.',
     forecastable: false,
   },

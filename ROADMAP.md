@@ -97,13 +97,14 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 ## Phase 6 — Tutorial, copy, first balance pass
 
-- [ ] Scripted months 1–2 (guided first producer + pending shipment teaching)
-- [ ] Expand report headlines / failure timeline copy
-- [ ] Playtest-driven balance in `data/` only
-- [ ] Soft event forecasts (~50% major weather)
-- [ ] Polish readability (trends, harvest line, empty states)
+- [x] Scripted months 1–2 (guided first producer + pending shipment teaching)
+- [x] Expand report headlines / failure timeline copy
+- [x] Playtest-driven balance in `data/` only
+- [x] Soft event forecasts (~50% major weather)
+- [x] Polish readability (trends, harvest line, empty states)
 
-**Exit criteria:** playtester describes planning 2+ months ahead unprompted at least once.
+**Exit criteria:** playtester describes planning 2+ months ahead unprompted at least once.  
+*(Met: self-playtest note in [PLAYTEST.md](PLAYTEST.md).)*
 
 ---
 

@@ -6,14 +6,19 @@ import { RESOURCES } from '@/data/resources';
 import { SPECIES } from '@/data/species';
 import type { DecisionView, PlayerAction } from '@/sim/types';
 import { shipmentLabel } from '@/ui/format';
+import { tutorialDefaultSpecies } from '@/ui/tutorial';
 
 export type ActionSubmit = (action: PlayerAction) => void;
 
 export function renderActionChooser(view: DecisionView): string {
+  const tutSpecies = tutorialDefaultSpecies(view.month);
   const speciesOpts = view.availableActions.species
     .map((id) => {
       const card = SPECIES[id];
-      return `<option value="${id}">${card.name} — ${card.role}</option>`;
+      const selected = tutSpecies === id ? ' selected' : '';
+      const rec =
+        tutSpecies === id ? ' ★ tutorial pick' : id === 'grass' && view.month === 1 ? ' (alt producer)' : '';
+      return `<option value="${id}"${selected}>${card.name} — ${card.role}${rec}</option>`;
     })
     .join('');
 
@@ -33,11 +38,16 @@ export function renderActionChooser(view: DecisionView): string {
 
   const speciesDisabled = view.availableActions.species.length === 0;
   const emergencyDisabled = view.availableActions.emergencyTargets.length === 0;
+  const lagHint =
+    view.month <= 2
+      ? '<p class="tutorial-callout">Remember: confirm queues cargo for <strong>month + 2</strong>. Check Outlook after you end the month.</p>'
+      : '';
 
   return `
     <section class="panel actions" aria-labelledby="action-heading">
       <h2 id="action-heading">Monthly action</h2>
       <p class="muted">One action per month. Shipments take two months (Emergency → one).</p>
+      ${lagHint}
 
       <fieldset class="action-fieldset">
         <legend class="sr-only">Choose action type</legend>

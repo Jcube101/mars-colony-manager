@@ -2,6 +2,7 @@
  * GameState factory — starting colony + barren-ish biome (GDD §5.5, §5.7).
  */
 
+import { START } from '@/data/balance';
 import { createRng } from '@/sim/rng';
 import {
   DEFAULT_COLONY_NAME,
@@ -50,45 +51,12 @@ export type CreateInitialStateOptions = {
   createdAt?: string;
 };
 
-// --- Starting values (GDD tables; magnitudes // BALANCE where noted) ---
-
-/** GDD: 12 colonists. */
-const START_POPULATION = 12;
-/** GDD: habitat capacity 20. */
-const START_HABITAT = 20;
-/** GDD: 36 FU Earth dry rations at ++. */
-const START_FOOD_FU = 36;
-/** GDD: morale 60/100. */
-const START_MORALE = 60;
-/**
- * GDD: ~2 months O₂ without production.
- * Unit = colonist-month → pop × 2.
- */
-const START_O2_MONTHS = 2;
-/**
- * Power: stable, small surplus (// BALANCE absolute units).
- * Roughly a few months of light life-support draw.
- */
-const START_POWER_BUFFER = 40; // BALANCE
-/** Colony water ice reserve (// BALANCE). */
-const START_WATER_RESERVE = 40; // BALANCE
-
-/** GDD: soil Fair → mid of Fair band on 0–100. */
-const START_SOIL = 40; // BALANCE — Fair
-/** GDD: water Adequate. */
-const START_BIOME_WATER = 55; // BALANCE
-/**
- * GDD: small algae trickle so month 1–2 are not pure tank panic.
- * Density index 0–100.
- */
-const START_ALGAE = 10; // BALANCE
-
 export function createInitialState(options: CreateInitialStateOptions): GameState {
   const seed = options.seed >>> 0;
   const rng = createRng(seed);
 
-  const population = START_POPULATION;
-  const o2Buffer = population * START_O2_MONTHS;
+  const population = START.population;
+  const o2Buffer = population * START.o2Months;
 
   return {
     meta: {
@@ -105,27 +73,27 @@ export function createInitialState(options: CreateInitialStateOptions): GameStat
     },
     colony: {
       population,
-      habitatCapacity: START_HABITAT,
+      habitatCapacity: START.habitat,
       food: {
         units: [
           {
-            amount: START_FOOD_FU,
+            amount: START.foodFu,
             tier: '++',
             source: 'earth_rations',
           },
         ],
       },
       o2Buffer,
-      powerBuffer: START_POWER_BUFFER,
-      waterReserve: START_WATER_RESERVE,
-      morale: START_MORALE,
+      powerBuffer: START.powerBuffer,
+      waterReserve: START.waterReserve,
+      morale: START.morale,
     },
     biome: {
-      soil: START_SOIL,
-      water: START_BIOME_WATER,
+      soil: START.soil,
+      water: START.biomeWater,
       plants: {
         grass: 0,
-        algae: START_ALGAE,
+        algae: START.algae,
         trees: [],
       },
       animals: {

@@ -5,6 +5,7 @@
  * Events apply *after* ticks (GDD resolution order); this module is pure biome flow.
  */
 
+import { ECO } from '@/data/balance';
 import type { Rng } from '@/sim/rng';
 import type { CauseTag, GameState } from '@/sim/types';
 
@@ -45,20 +46,20 @@ export function runEcosystemMonth(state: GameState, rng: Rng): EcosystemResult {
 
     if (b.plants.grass > 0) {
       const g =
-        b.plants.grass * 0.08 * soilF * waterF * light * noise(rng, 0.1);
+        b.plants.grass * ECO.grassGrowth * soilF * waterF * light * noise(rng, 0.1);
       b.plants.grass = clamp(b.plants.grass + g - b.plants.grass * 0.01, 0, 100);
     }
 
     if (b.plants.algae > 0) {
       const a =
-        b.plants.algae * 0.07 * waterF * light * noise(rng, 0.1);
+        b.plants.algae * ECO.algaeGrowth * waterF * light * noise(rng, 0.1);
       b.plants.algae = clamp(b.plants.algae + a - b.plants.algae * 0.015, 0, 100);
     }
 
     for (const cohort of b.plants.trees) {
       if (cohort.density <= 0) continue;
       const t =
-        cohort.density * 0.03 * soilF * waterF * light * noise(rng, 0.08);
+        cohort.density * ECO.treeGrowth * soilF * waterF * light * noise(rng, 0.08);
       cohort.density = clamp(cohort.density + t - cohort.density * 0.005, 0, 100);
     }
 
@@ -79,7 +80,7 @@ export function runEcosystemMonth(state: GameState, rng: Rng): EcosystemResult {
     if (b.animals.insects > 0 || plantBiomass > 5) {
       const foodBase = b.soil * 0.5 + plantBiomass * 0.3;
       const base = Math.max(b.animals.insects, plantBiomass > 5 ? 2 : 0);
-      const growth = base * 0.12 * (foodBase / 40) * noise(rng, 0.2);
+      const growth = base * ECO.insectGrowth * (foodBase / 40) * noise(rng, 0.2);
       b.animals.insects = Math.max(0, Math.round(b.animals.insects + growth));
       if (b.animals.insects > 200) {
         b.plants.grass = clamp(b.plants.grass - 0.3, 0, 100);
@@ -92,7 +93,8 @@ export function runEcosystemMonth(state: GameState, rng: Rng): EcosystemResult {
       if (b.plants.grass < 3) {
         b.animals.rabbits = Math.max(0, Math.round(b.animals.rabbits * 0.85));
       } else {
-        const g = b.animals.rabbits * 0.09 * (b.plants.grass / 30) * noise(rng, 0.15);
+        const g =
+          b.animals.rabbits * ECO.rabbitGrowth * (b.plants.grass / 30) * noise(rng, 0.15);
         b.animals.rabbits = Math.max(0, Math.round(b.animals.rabbits + g));
         b.plants.grass = clamp(b.plants.grass - b.animals.rabbits * 0.02, 0, 100);
       }
@@ -102,7 +104,8 @@ export function runEcosystemMonth(state: GameState, rng: Rng): EcosystemResult {
       if (b.plants.grass < 5) {
         b.animals.deer = Math.max(0, Math.round(b.animals.deer * 0.88));
       } else {
-        const g = b.animals.deer * 0.05 * (b.plants.grass / 35) * noise(rng, 0.12);
+        const g =
+          b.animals.deer * ECO.deerGrowth * (b.plants.grass / 35) * noise(rng, 0.12);
         b.animals.deer = Math.max(0, Math.round(b.animals.deer + g));
         b.plants.grass = clamp(b.plants.grass - b.animals.deer * 0.05, 0, 100);
       }
@@ -113,7 +116,7 @@ export function runEcosystemMonth(state: GameState, rng: Rng): EcosystemResult {
       if (prey < b.animals.wolves * 3) {
         b.animals.wolves = Math.max(0, Math.round(b.animals.wolves * 0.8));
       } else {
-        const g = b.animals.wolves * 0.04 * noise(rng, 0.1);
+        const g = b.animals.wolves * ECO.wolfGrowth * noise(rng, 0.1);
         b.animals.wolves = Math.max(0, Math.round(b.animals.wolves + g));
         const rabbitKill = Math.min(
           b.animals.rabbits,
@@ -145,12 +148,12 @@ export function runEcosystemMonth(state: GameState, rng: Rng): EcosystemResult {
 
   const algae = state.biome.plants.algae;
   const trees = totalTreeDensity(state.biome);
-  o2Produced = algae * 0.12 + trees * 0.18; // BALANCE
+  o2Produced =
+    algae * ECO.algaeO2PerDensity + trees * ECO.treeO2PerDensity;
   state.biome.o2ProductionLastMonth = o2Produced;
   state.colony.o2Buffer += o2Produced;
 
-  // Baseline solar recharge (// BALANCE)
-  state.colony.powerBuffer += 12;
+  state.colony.powerBuffer += ECO.solarRecharge;
 
   if (algae > 15 || trees > 10) {
     causes.push({

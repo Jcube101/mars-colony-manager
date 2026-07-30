@@ -21,8 +21,11 @@ import {
   renderDecisionBrief,
   renderGameOver,
   renderLastReport,
+  snapshotFromState,
+  type VitalsSnapshot,
 } from '@/ui/reportView';
 import { bindSavePanel, renderSavePanel } from '@/ui/saveView';
+import { renderTutorialPanel } from '@/ui/tutorial';
 
 type Screen = 'new_game' | 'play' | 'ended';
 
@@ -31,6 +34,8 @@ type AppModel = {
   state: GameState | null;
   view: DecisionView | null;
   lastReport: MonthReport | null;
+  /** Prior decision brief vitals for trend arrows. */
+  prevSnapshot: VitalsSnapshot | null;
   flashMsg: string | null;
   flashKind: 'ok' | 'err' | null;
 };
@@ -40,6 +45,7 @@ const model: AppModel = {
   state: null,
   view: null,
   lastReport: null,
+  prevSnapshot: null,
   flashMsg: null,
   flashKind: null,
 };
@@ -86,6 +92,7 @@ function render(root: HTMLElement): void {
       model.state = null;
       model.view = null;
       model.lastReport = null;
+      model.prevSnapshot = null;
       clearFlash();
       render(root);
     });
@@ -115,7 +122,7 @@ function render(root: HTMLElement): void {
     : `
       <section class="panel">
         <h2>Month ${model.view.month} — Opening brief</h2>
-        <p class="muted">No prior resolution. Review vitals, then choose your first Earth request (or stand by).</p>
+        <p class="muted">No prior resolution. Review vitals, then choose your first Earth request (tutorial suggests a producer).</p>
       </section>
     `;
 
@@ -123,11 +130,12 @@ function render(root: HTMLElement): void {
     <div class="app">
       <header class="app-header">
         <h1>${COPY.appTitle}</h1>
-        <p class="tagline">One action per month. Two months until it lands.</p>
+        <p class="tagline">${COPY.tagline}</p>
       </header>
       ${flashHtml()}
+      ${renderTutorialPanel(model.view)}
       ${reportHtml}
-      ${renderDecisionBrief(model.state, model.view)}
+      ${renderDecisionBrief(model.state, model.view, model.prevSnapshot)}
       ${renderActionChooser(model.view)}
       ${renderSavePanel({ inGame: true })}
       ${renderDebugPanel(model.state)}
@@ -188,7 +196,7 @@ function renderNewGame(): string {
     <div class="app">
       <header class="app-header">
         <h1>${COPY.appTitle}</h1>
-        <p class="tagline">Settle and tame a fragile Mars outpost — lagged Earth requests, living ecosystem.</p>
+        <p class="tagline">${COPY.tagline}</p>
       </header>
       ${flashHtml()}
       <section class="panel new-game" aria-labelledby="new-heading">
@@ -201,7 +209,7 @@ function renderNewGame(): string {
           Seed <span class="muted">(shown on brief and game over; blank = random)</span>
           <input type="number" id="ng-seed" placeholder="${defaultSeed}" />
         </label>
-        <p class="muted">24-month run. Win needs ≥4 established species and 3 months food+O₂ self-sufficiency.</p>
+        <p class="muted">24-month run. Months 1–2 are guided. Win: ≥4 established species and 3 months food+O₂ self-sufficiency.</p>
         <button type="button" class="btn btn-primary" id="btn-start">Begin liaison duty</button>
         ${isDebugEnabled() ? '<p class="chip chip--watch">Debug mode on (?debug=1)</p>' : ''}
       </section>
@@ -229,6 +237,7 @@ function bindNewGame(root: HTMLElement): void {
     model.state = started.state;
     model.view = started.view;
     model.lastReport = null;
+    model.prevSnapshot = null;
     model.screen = 'play';
     clearFlash();
     persistBoundary();
@@ -239,6 +248,9 @@ function bindNewGame(root: HTMLElement): void {
 function submitAction(root: HTMLElement, action: PlayerAction): void {
   if (!model.state) return;
 
+  // Capture pre-resolution snapshot for next brief trends
+  model.prevSnapshot = snapshotFromState(model.state);
+
   const ended = endMonth(model.state, action);
   model.state = ended.state;
   model.lastReport = ended.report;
@@ -246,7 +258,6 @@ function submitAction(root: HTMLElement, action: PlayerAction): void {
   if (ended.report.outcome !== 'ongoing') {
     model.screen = 'ended';
     model.view = null;
-    // Keep final state in autosave for export / review
     persistBoundary();
     render(root);
     return;
@@ -255,7 +266,6 @@ function submitAction(root: HTMLElement, action: PlayerAction): void {
   const started = startMonth(model.state);
   model.state = started.state;
   model.view = started.view;
-  // Month boundary: decision-ready snapshot
   persistBoundary();
   render(root);
 }
@@ -266,6 +276,7 @@ function resumeFromSave(
   lastReport: MonthReport | null,
 ): void {
   model.lastReport = lastReport;
+  model.prevSnapshot = null;
 
   if (state.outcome === 'won' || state.outcome === 'lost') {
     model.state = state;
@@ -275,8 +286,6 @@ function resumeFromSave(
     return;
   }
 
-  // Ensure decision view for current month (re-run startMonth if needed)
-  // If already in decision phase with arrivals applied, startMonth re-delivers only due ships.
   const started = startMonth(state);
   model.state = started.state;
   model.view = started.view;
