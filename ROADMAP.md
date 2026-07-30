@@ -50,17 +50,17 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 *Goal: the game exists without UI.*
 
-- [ ] `startMonth` — deliver arrivals, expose decision view model
-- [ ] `applyAction` / queue shipments (species, resource, emergency, stand by)
-- [ ] `endMonth` choke point — fixed GDD order:
+- [x] `startMonth` — deliver arrivals, expose decision view model
+- [x] `applyAction` / queue shipments (species, resource, emergency, stand by)
+- [x] `endMonth` choke point — fixed GDD order:
   - queue order → 10 ecosystem ticks → events → harvest → upkeep → attrition/growth → win/loss → report
-- [ ] Ecosystem stock-and-flow (all 8 species, soil/water/power/O₂ hooks)
-- [ ] Auto-harvest policy + sustainability floors + satiation / FU
-- [ ] Colonist labor, morale, attrition, +1/6 mo growth gates
-- [ ] Earth window (1–18 full, 19–24 resource-only)
-- [ ] Win/loss evaluation (24 months, ≥4 species, 3-month self-sufficiency)
-- [ ] Report model with cause tags (causality law)
-- [ ] Vitest: lag timing, emergency rush, harvest floors, win checks, determinism (seed)
+- [x] Ecosystem stock-and-flow (all 8 species, soil/water/power/O₂ hooks)
+- [x] Auto-harvest policy + sustainability floors + satiation / FU
+- [x] Colonist labor, morale, attrition, +1/6 mo growth gates
+- [x] Earth window (1–18 full, 19–24 resource-only)
+- [x] Win/loss evaluation (24 months, ≥4 species, 3-month self-sufficiency)
+- [x] Report model with cause tags (causality law)
+- [x] Vitest: lag timing, emergency rush, harvest floors, win checks, determinism (seed)
 
 **Exit criteria:** scripted action list can run a full 24-month headless game; tests green.
 

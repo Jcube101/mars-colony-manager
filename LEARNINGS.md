@@ -32,6 +32,12 @@ Major decisions only — enough that you can answer “why did we do it this way
 
 ---
 
+### Q: Immutable vs mutable sim state in the month pipeline?
+
+**A (2026-07-31):** Clone-then-mutate. Each `startMonth` / `endMonth` deep-clones `GameState` (`structuredClone`), mutates the working copy through pure step functions, and returns the new state. Avoids accidental shared mutation across UI/tests while keeping step code readable. Not full persistent immutable updates (no structural sharing).
+
+---
+
 ## Later entries
 
-Add new major Q/As below as implementation forces real choices (e.g. immutable vs mutable state, first CI setup). Skip anything already obvious from GDD/SPEC.
+Add new major Q/As below as implementation forces real choices (e.g. first CI setup). Skip anything already obvious from GDD/SPEC.

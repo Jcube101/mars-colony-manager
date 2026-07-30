@@ -8,7 +8,7 @@ export function mountApp(root: HTMLElement): void {
     <main class="shell">
       <h1>${COPY.appTitle}</h1>
       <p class="tagline">${COPY.scaffoldHeadline}</p>
-      <p class="status">Phase 2 — domain model</p>
+      <p class="status">Phase 3 — headless sim pipeline</p>
     </main>
   `;
 }

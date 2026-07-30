@@ -23,6 +23,7 @@ export type {
   CalendarPhase,
   CauseTag,
   ColonyState,
+  DecisionView,
   FoodSource,
   FoodStack,
   FoodTier,
@@ -32,6 +33,7 @@ export type {
   MonthReport,
   PendingShipment,
   PlayerAction,
+  RunOutcome,
   ShipmentPayload,
   SoilBand,
   StatusBand,
@@ -148,6 +150,9 @@ export function createInitialState(options: CreateInitialStateOptions): GameStat
       timeline: [],
     },
     rngState: rng.getState(),
+    outcome: 'ongoing',
+    lastArrivals: [],
+    nextShipmentSeq: 1,
   };
 }
 
