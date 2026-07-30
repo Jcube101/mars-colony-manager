@@ -28,6 +28,8 @@
 | Language | **TypeScript** (strict) | Shared types across sim and UI |
 | Bundler / dev | **Vite** | Fast dev server, static build |
 | Dev / preview port | **3004** (`strictPort`) | Frontend range 3001–3099; avoids Vite default 5173 |
+| Production host | **https://mars.job-joseph.com** | jobpi self-host via Cloudflare Tunnel |
+| Production port | **8018** → `127.0.0.1` only | Static `dist/`; never bind `0.0.0.0` in prod |
 | Package manager | **npm** (default) | Lockfile committed once scaffold exists |
 | Unit tests | **Vitest** | Prefer pure sim tests |
 | Lint/format | Optional ESLint + Prettier | Add only if low friction |
@@ -67,10 +69,24 @@ Schema is application-level JSON (see §5), not relational tables.
 
 | Item | v1 choice |
 |------|-----------|
-| Game server | **None** |
+| Game server | **None** (static SPA only) |
 | Auth | **None** |
 | Analytics | Optional, non-blocking, later |
 | CDN fonts | Acceptable; self-host later if offline matters |
+| Production hosting | **jobpi** + Cloudflare Tunnel **pi-home** (see [DEPLOY.md](DEPLOY.md)) |
+
+### Production ops (Phase 8)
+
+| Item | Value |
+|------|--------|
+| URL | `https://mars.job-joseph.com` |
+| Path on Pi | `~/projects/mars-colony-manager` |
+| Process | systemd user unit `mars-colony-manager` (or system unit / optional Nginx) |
+| Bind | `127.0.0.1:8018` — tunnel only; no public bind |
+| Build | On Pi: `npm ci && npm run build` → `dist/` |
+| Redeploy | `bash scripts/deploy-jobpi.sh` |
+| Vite base | `./` (relative assets; domain root) |
+| Port registry | dev-meta `PORTS.md` — **8018** = mars-colony-manager |
 
 ### Out-of-scope engines
 
@@ -281,7 +297,7 @@ CI: optional later (GitHub Actions: `npm test`).
 
 ## 13. Future considerations
 
-See [ROADMAP.md](ROADMAP.md) Phase 7+. Possible later: IndexedDB, PWA shell, richer art, Steam wrap, light meta progression.
+See [ROADMAP.md](ROADMAP.md) Phase 8+ (self-host is primary). Possible later: IndexedDB, PWA shell, richer art, Steam wrap, light meta progression, optional itch/Pages mirror.
 
 ## 14. Open technical choices (non-blocking)
 

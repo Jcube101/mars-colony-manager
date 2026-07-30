@@ -127,12 +127,18 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 *Canonical production host (not itch/Pages by default).*
 
-- [ ] Serve static `dist/` at **mars.job-joseph.com**
-- [ ] Host on **jobpi** via reverse proxy / static server on port **8018**
-- [ ] Deploy path: green `main` → build → publish to jobpi (document exact steps)
-- [ ] Health check / smoke after deploy
+- [x] Serve static `dist/` at **https://mars.job-joseph.com**
+- [x] Host on **jobpi** — static serve on **127.0.0.1:8018** (systemd user unit `mars-colony-manager`)
+- [x] Deploy path: green `main` → `scripts/deploy-jobpi.sh` (pull → `npm ci` → build → restart unit) — see [DEPLOY.md](DEPLOY.md)
+- [x] Health check / smoke after deploy (`curl` localhost + HTTPS)
+- [x] jobpi: build + serve `dist/` on 127.0.0.1:8018 (systemd)
+- [x] Cloudflare Tunnel **pi-home**: `mars.job-joseph.com` → `http://localhost:8018`
+- [x] Verify HTTPS + smoke play
+- [x] Docs: DEPLOY / SPEC / README / PORTS; itch/Pages optional secondary only
 
 **Non-goals for Phase 8:** new game systems, backend game server, auth.
+
+**Exit criteria:** HTTPS game loads; unit healthy; tunnel OK; docs match real path.
 
 ---
 
