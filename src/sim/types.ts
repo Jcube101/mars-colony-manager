@@ -131,6 +131,11 @@ export type GameFlags = {
   lastEvents: EventId[];
   /** Extra months before next request ships (solar flare). */
   nextRequestDelayMonths: number;
+  /**
+   * Debug only (`?debug=1`): force next event id, then cleared.
+   * Not used by normal play.
+   */
+  debugForceEvent?: EventId;
 };
 
 export type TimelineEntry = {

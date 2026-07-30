@@ -5,8 +5,14 @@
   --muted: #8b9aab;
   --accent: #c45c26;
   --panel: #1a222c;
+  --border: #2a3542;
+  --stable: #3d8b6e;
+  --watch: #c4a035;
+  --critical: #c43c2e;
+  --focus: #5b9fd4;
   font-family: 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
+  font-size: 16px;
 }
 
 * {
@@ -20,28 +26,246 @@ body {
   color: var(--fg);
 }
 
-.shell {
-  max-width: 40rem;
+.app {
+  max-width: 48rem;
   margin: 0 auto;
-  padding: 3rem 1.5rem;
+  padding: 1.25rem 1rem 3rem;
 }
 
-h1 {
-  margin: 0 0 0.5rem;
+.app-header {
+  margin-bottom: 1rem;
+}
+
+.app-header h1 {
+  margin: 0 0 0.25rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+  font-size: 1.5rem;
 }
 
 .tagline {
   color: var(--muted);
-  margin: 0 0 1.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
 }
 
-.status {
-  display: inline-block;
-  margin: 0;
-  padding: 0.35rem 0.75rem;
+.panel {
   background: var(--panel);
-  border-left: 3px solid var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.panel h3 {
+  margin: 0.85rem 0 0.35rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.headline {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.meta-line {
   font-size: 0.9rem;
+  margin: 0.35rem 0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.25rem;
+}
+
+@media (max-width: 560px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+ul {
+  margin: 0.25rem 0 0.5rem;
+  padding-left: 1.2rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0.6rem;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #243040;
+  border: 1px solid var(--border);
+}
+
+.chip--stable {
+  border-color: var(--stable);
+  color: #a8e0c8;
+}
+
+.chip--watch {
+  border-color: var(--watch);
+  color: #f0dfa0;
+}
+
+.chip--critical {
+  border-color: var(--critical);
+  background: #3a1c18;
+  color: #ffb4a8;
+}
+
+.eco-list {
+  font-size: 0.92rem;
+}
+
+.forecast {
+  font-style: italic;
+  color: var(--watch);
+  margin: 0.4rem 0;
+}
+
+.causes {
+  font-size: 0.88rem;
+}
+
+.field {
+  display: block;
+  margin-bottom: 0.85rem;
+  font-size: 0.95rem;
+}
+
+.field input,
+.action-fieldset select,
+.debug-row input,
+.debug-row select {
+  display: block;
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+
+.action-fieldset {
+  border: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.65rem 0 0.25rem;
+  flex-wrap: wrap;
+  cursor: pointer;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: #243040;
+  color: var(--fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--focus);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: #a34a1e;
+  color: #fff;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  margin-top: 0.25rem;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+
+.center {
+  text-align: center;
+}
+
+.game-over h2 {
+  color: var(--accent);
+}
+
+.debug {
+  border-style: dashed;
+  border-color: var(--watch);
+}
+
+.debug-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: end;
+  margin-bottom: 0.65rem;
+}
+
+.debug-row label {
+  font-size: 0.9rem;
+}
+
+.flash {
+  background: #2a3a20;
+  border: 1px solid var(--stable);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Focus visibility for keyboard */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }

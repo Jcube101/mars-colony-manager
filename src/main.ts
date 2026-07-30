@@ -1,6 +1,5 @@
 /**
- * App boot: wire UI ↔ sim.
- * Phase 1 scaffold — no game rules yet.
+ * App boot: wire UI ↔ sim (Phase 4 vertical slice).
  */
 import { mountApp } from '@/ui/app';
 

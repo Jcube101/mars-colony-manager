@@ -59,7 +59,15 @@ export function resolveEvents(
     return { id: e.id, weight: w };
   });
 
-  const eventId = pickWeighted(rng, weights);
+  // Debug override (?debug=1 UI) — does not affect normal runs
+  let eventId: EventId;
+  if (state.flags.debugForceEvent) {
+    eventId = state.flags.debugForceEvent;
+    delete state.flags.debugForceEvent;
+    // Still consume a roll for stream stability when not forced? Prefer not — debug only.
+  } else {
+    eventId = pickWeighted(rng, weights);
+  }
   const card = EVENTS[eventId];
 
   switch (eventId) {
