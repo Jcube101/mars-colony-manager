@@ -1,9 +1,10 @@
 /**
  * Screen orchestration: new game → monthly loop → end summary.
- * Binds UI to sim only; no rules reimplemented here.
+ * Binds UI to sim + save layer; no rules reimplemented here.
  */
 
 import { COPY } from '@/data/copy';
+import { writeAutosave } from '@/save/index';
 import {
   createInitialState,
   endMonth,
@@ -21,6 +22,7 @@ import {
   renderGameOver,
   renderLastReport,
 } from '@/ui/reportView';
+import { bindSavePanel, renderSavePanel } from '@/ui/saveView';
 
 type Screen = 'new_game' | 'play' | 'ended';
 
@@ -29,6 +31,8 @@ type AppModel = {
   state: GameState | null;
   view: DecisionView | null;
   lastReport: MonthReport | null;
+  flashMsg: string | null;
+  flashKind: 'ok' | 'err' | null;
 };
 
 const model: AppModel = {
@@ -36,6 +40,8 @@ const model: AppModel = {
   state: null,
   view: null,
   lastReport: null,
+  flashMsg: null,
+  flashKind: null,
 };
 
 export function mountApp(root: HTMLElement): void {
@@ -46,6 +52,13 @@ function render(root: HTMLElement): void {
   if (model.screen === 'new_game') {
     root.innerHTML = renderNewGame();
     bindNewGame(root);
+    bindSavePanel(root, {
+      onLoad: (state, lastReport) => resumeFromSave(root, state, lastReport),
+      onMessage: (msg, kind) => {
+        setFlash(msg, kind ?? 'ok');
+        render(root);
+      },
+    });
     return;
   }
 
@@ -55,7 +68,14 @@ function render(root: HTMLElement): void {
         <header class="app-header">
           <h1>${COPY.appTitle}</h1>
         </header>
+        ${flashHtml()}
         ${renderGameOver(model.state, model.lastReport)}
+        <section class="panel">
+          <h2>Seed</h2>
+          <p>Run seed: <strong class="seed-display">${model.state.meta.seed}</strong></p>
+          <p class="muted">Copy this seed on new game to replay the same RNG stream (actions still matter).</p>
+        </section>
+        ${renderSavePanel({ inGame: true })}
         <p class="center">
           <button type="button" class="btn btn-primary" id="btn-new-run">New run</button>
         </p>
@@ -66,7 +86,19 @@ function render(root: HTMLElement): void {
       model.state = null;
       model.view = null;
       model.lastReport = null;
+      clearFlash();
       render(root);
+    });
+    bindSavePanel(root, {
+      onLoad: (state, lastReport) => resumeFromSave(root, state, lastReport),
+      onMessage: (msg, kind) => {
+        setFlash(msg, kind ?? 'ok');
+        render(root);
+      },
+      getLive: () =>
+        model.state
+          ? { state: model.state, lastReport: model.lastReport }
+          : null,
     });
     return;
   }
@@ -93,9 +125,11 @@ function render(root: HTMLElement): void {
         <h1>${COPY.appTitle}</h1>
         <p class="tagline">One action per month. Two months until it lands.</p>
       </header>
+      ${flashHtml()}
       ${reportHtml}
       ${renderDecisionBrief(model.state, model.view)}
       ${renderActionChooser(model.view)}
+      ${renderSavePanel({ inGame: true })}
       ${renderDebugPanel(model.state)}
     </div>
   `;
@@ -104,16 +138,28 @@ function render(root: HTMLElement): void {
     submitAction(root, action);
   });
 
+  bindSavePanel(root, {
+    onLoad: (state, lastReport) => resumeFromSave(root, state, lastReport),
+    onMessage: (msg, kind) => {
+      setFlash(msg, kind ?? 'ok');
+      render(root);
+    },
+    getLive: () =>
+      model.state
+        ? { state: model.state, lastReport: model.lastReport }
+        : null,
+  });
+
   bindDebugPanel(root, {
     onForceEvent: (eventId) => {
       if (!model.state) return;
       model.state.flags.debugForceEvent = eventId;
-      flash(root, `Next event armed: ${eventId}`);
+      setFlash(`Next event armed: ${eventId}`, 'ok');
+      render(root);
     },
     onSetPopulation: (pop) => {
       if (!model.state) return;
       model.state.colony.population = pop;
-      // refresh view snapshot
       if (model.view) {
         model.view = {
           ...model.view,
@@ -130,6 +176,7 @@ function render(root: HTMLElement): void {
       const started = startMonth(model.state);
       model.state = started.state;
       model.view = started.view;
+      persistBoundary();
       render(root);
     },
   });
@@ -143,6 +190,7 @@ function renderNewGame(): string {
         <h1>${COPY.appTitle}</h1>
         <p class="tagline">Settle and tame a fragile Mars outpost — lagged Earth requests, living ecosystem.</p>
       </header>
+      ${flashHtml()}
       <section class="panel new-game" aria-labelledby="new-heading">
         <h2 id="new-heading">New game</h2>
         <label class="field">
@@ -150,13 +198,14 @@ function renderNewGame(): string {
           <input type="text" id="ng-name" maxlength="40" value="${COPY.defaultColonyName}" />
         </label>
         <label class="field">
-          Seed <span class="muted">(optional — leave blank for random)</span>
+          Seed <span class="muted">(shown on brief and game over; blank = random)</span>
           <input type="number" id="ng-seed" placeholder="${defaultSeed}" />
         </label>
         <p class="muted">24-month run. Win needs ≥4 established species and 3 months food+O₂ self-sufficiency.</p>
         <button type="button" class="btn btn-primary" id="btn-start">Begin liaison duty</button>
         ${isDebugEnabled() ? '<p class="chip chip--watch">Debug mode on (?debug=1)</p>' : ''}
       </section>
+      ${renderSavePanel({ inGame: false })}
     </div>
   `;
 }
@@ -181,6 +230,8 @@ function bindNewGame(root: HTMLElement): void {
     model.view = started.view;
     model.lastReport = null;
     model.screen = 'play';
+    clearFlash();
+    persistBoundary();
     render(root);
   });
 }
@@ -195,6 +246,8 @@ function submitAction(root: HTMLElement, action: PlayerAction): void {
   if (ended.report.outcome !== 'ongoing') {
     model.screen = 'ended';
     model.view = null;
+    // Keep final state in autosave for export / review
+    persistBoundary();
     render(root);
     return;
   }
@@ -202,15 +255,62 @@ function submitAction(root: HTMLElement, action: PlayerAction): void {
   const started = startMonth(model.state);
   model.state = started.state;
   model.view = started.view;
+  // Month boundary: decision-ready snapshot
+  persistBoundary();
   render(root);
 }
 
-function flash(root: HTMLElement, msg: string): void {
-  let el = root.querySelector<HTMLElement>('.flash');
-  if (!el) {
-    el = document.createElement('p');
-    el.className = 'flash';
-    root.querySelector('.app')?.prepend(el);
+function resumeFromSave(
+  root: HTMLElement,
+  state: GameState,
+  lastReport: MonthReport | null,
+): void {
+  model.lastReport = lastReport;
+
+  if (state.outcome === 'won' || state.outcome === 'lost') {
+    model.state = state;
+    model.view = null;
+    model.screen = 'ended';
+    render(root);
+    return;
   }
-  el.textContent = msg;
+
+  // Ensure decision view for current month (re-run startMonth if needed)
+  // If already in decision phase with arrivals applied, startMonth re-delivers only due ships.
+  const started = startMonth(state);
+  model.state = started.state;
+  model.view = started.view;
+  model.screen = 'play';
+  persistBoundary();
+  render(root);
+}
+
+/** Autosave decision-ready (or ended) state at month boundary. */
+function persistBoundary(): void {
+  if (!model.state) return;
+  writeAutosave(model.state, model.lastReport);
+}
+
+function setFlash(msg: string, kind: 'ok' | 'err'): void {
+  model.flashMsg = msg;
+  model.flashKind = kind;
+}
+
+function clearFlash(): void {
+  model.flashMsg = null;
+  model.flashKind = null;
+}
+
+function flashHtml(): string {
+  if (!model.flashMsg) return '';
+  const cls = model.flashKind === 'err' ? 'flash flash--err' : 'flash';
+  return `<p class="${cls}">${escapeHtml(model.flashMsg)}</p>`;
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

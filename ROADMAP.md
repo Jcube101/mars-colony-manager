@@ -85,11 +85,11 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 ## Phase 5 — Persistence & seed UX
 
-- [ ] Autosave on month boundary (`localStorage`)
-- [ ] 3 save slots + load
-- [ ] JSON export / import
-- [ ] Seed shown on new game and game over
-- [ ] Tests or manual checklist for save/load round-trip
+- [x] Autosave on month boundary (`localStorage`)
+- [x] 3 save slots + load
+- [x] JSON export / import
+- [x] Seed shown on new game and game over
+- [x] Tests or manual checklist for save/load round-trip
 
 **Exit criteria:** close tab mid-run, resume from slot; export works on another browser profile.
 
