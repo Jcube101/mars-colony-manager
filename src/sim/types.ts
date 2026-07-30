@@ -7,6 +7,8 @@ import type { EventId } from '@/data/events';
 import type { ResourceId } from '@/data/resources';
 import type { SpeciesId } from '@/data/species';
 
+export type { EventId, ResourceId, SpeciesId };
+
 // --- Food ---
 
 /** Satiation / food quality tier (GDD §5.9). */
@@ -151,6 +153,8 @@ export type CauseTag =
   | { type: 'species'; description: string; speciesId: SpeciesId }
   | { type: 'system'; description: string };
 
+export type RunOutcome = 'ongoing' | 'won' | 'lost';
+
 export type MonthReport = {
   month: number;
   headline: string;
@@ -159,6 +163,37 @@ export type MonthReport = {
   events: EventId[];
   arrivals: PendingShipment[];
   losses: string[];
+  /** Ecosystem food harvested this month (excludes Earth rations). */
+  ecosystemFoodHarvested: number;
+  /** Biome O₂ production this month. */
+  o2Produced: number;
+  /** Colonist O₂ consumed this month. */
+  o2Consumed: number;
+  foodSelfSufficient: boolean;
+  o2SelfSufficient: boolean;
+  establishedSpecies: SpeciesId[];
+  outcome: RunOutcome;
+  lossReason?: string;
+};
+
+/** Decision-time view after arrivals (knowledge-first). */
+export type DecisionView = {
+  month: number;
+  monthsRemaining: number;
+  earthSpeciesLocked: boolean;
+  earthWindow: 'full' | 'resource_only' | 'closed';
+  colony: ColonyState;
+  biome: BiomeState;
+  pendingShipments: PendingShipment[];
+  arrivals: PendingShipment[];
+  lastEvents: EventId[];
+  forecast?: string;
+  availableActions: {
+    species: SpeciesId[];
+    resources: ResourceId[];
+    emergencyTargets: PendingShipment[];
+    canStandBy: true;
+  };
 };
 
 // --- Player actions (one per month) ---
@@ -181,6 +216,15 @@ export type GameState = {
   history: HistoryState;
   /** Seeded PRNG state (mulberry32). */
   rngState: number;
+  /** Set when run ends. */
+  outcome: RunOutcome;
+  lossReason?: string;
+  /** Arrivals delivered at the start of the current decision month. */
+  lastArrivals: PendingShipment[];
+  /** Soft forecast line for next month (optional). */
+  forecast?: string;
+  /** Monotonic shipment id counter. */
+  nextShipmentSeq: number;
 };
 
 // --- Helpers ---

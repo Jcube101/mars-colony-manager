@@ -61,6 +61,9 @@ describe('createInitialState (Phase 2)', () => {
     expect(state.history.foodSelfSufficient).toEqual([]);
     expect(state.history.o2SelfSufficient).toEqual([]);
     expect(typeof state.rngState).toBe('number');
+    expect(state.outcome).toBe('ongoing');
+    expect(state.lastArrivals).toEqual([]);
+    expect(state.nextShipmentSeq).toBe(1);
   });
 
   it('defaults colony name to Hephaestus', () => {
