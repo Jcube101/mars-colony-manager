@@ -33,3 +33,6 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Local agent prompt scratch (not versioned)
+PROMPTS.md

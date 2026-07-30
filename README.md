@@ -30,6 +30,7 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 | [ROADMAP.md](ROADMAP.md) | Phased build plan and checklists |
 | [AGENTS.md](AGENTS.md) | Context for AI coding agents + **Playbook** (branches, agents, CI) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute (humans + agents) |
+| [PROMPTS.md](PROMPTS.md) | Copy-paste prompts: implement phase + commit/PR/merge |
 | [LEARNINGS.md](LEARNINGS.md) | Major decision log only (Q&A) |
 | [QandA.md](QandA.md) | Design Q&A trail (round 1) |
 | [QandA-systems.md](QandA-systems.md) | Systems Q&A trail (round 2, locked) |
