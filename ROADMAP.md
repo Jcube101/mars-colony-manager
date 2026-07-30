@@ -34,13 +34,13 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 *Goal: types and balance knobs exist; numbers may be placeholders.*
 
-- [ ] Core types: `GameState`, colony, biome, shipments, report, actions
-- [ ] `data/species.ts` — 8 species cards (rates marked `// BALANCE`)
-- [ ] `data/resources.ts` — O₂ / water / nutrients / power packages
-- [ ] `data/events.ts` — dust, cold, blight, quiet, solar flare, illness weights
-- [ ] `data/copy.ts` — starter headline strings
-- [ ] Initial state factory (starting colony + barren-ish biome per GDD)
-- [ ] Seeded RNG module (`rng.ts`) — no `Math.random()` in sim
+- [x] Core types: `GameState`, colony, biome, shipments, report, actions
+- [x] `data/species.ts` — 8 species cards (rates marked `// BALANCE`)
+- [x] `data/resources.ts` — O₂ / water / nutrients / power packages
+- [x] `data/events.ts` — dust, cold, blight, quiet, solar flare, illness weights
+- [x] `data/copy.ts` — starter headline strings
+- [x] Initial state factory (starting colony + barren-ish biome per GDD)
+- [x] Seeded RNG module (`rng.ts`) — no `Math.random()` in sim
 
 **Exit criteria:** can construct a valid initial `GameState` in tests.
 
