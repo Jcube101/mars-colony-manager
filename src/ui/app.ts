@@ -317,7 +317,10 @@ function resumeFromSave(
 /** Autosave decision-ready (or ended) state at month boundary. */
 function persistBoundary(): void {
   if (!model.state) return;
-  writeAutosave(model.state, model.lastReport);
+  const result = writeAutosave(model.state, model.lastReport);
+  if (!result.ok) {
+    setFlash(`Autosave failed: ${result.error}`, 'err');
+  }
 }
 
 function setFlash(msg: string, kind: 'ok' | 'err'): void {

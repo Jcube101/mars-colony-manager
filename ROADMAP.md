@@ -129,7 +129,7 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 
 - [x] Serve static `dist/` at **https://mars.job-joseph.com**
 - [x] Host on **jobpi** — static serve on **127.0.0.1:8018** (systemd user unit `mars-colony-manager`)
-- [x] Deploy path: green `main` → `scripts/deploy-jobpi.sh` (pull → `npm ci` → build → restart unit) — see [DEPLOY.md](DEPLOY.md)
+- [x] Deploy path: green `main` → `scripts/deploy-jobpi.sh` (pull → `npm ci` → `npm test` → `dist.next` swap → restart) — see [DEPLOY.md](DEPLOY.md)
 - [x] Health check / smoke after deploy (`curl` localhost + HTTPS)
 - [x] jobpi: build + serve `dist/` on 127.0.0.1:8018 (systemd)
 - [x] Cloudflare Tunnel **pi-home**: `mars.job-joseph.com` → `http://localhost:8018`
@@ -139,6 +139,19 @@ Phased build plan. Design is locked (GDD v0.3). Implementation proceeds on **fea
 **Non-goals for Phase 8:** new game systems, backend game server, auth.
 
 **Exit criteria:** HTTPS game loads; unit healthy; tunnel OK; docs match real path.
+
+---
+
+## Reliability (post Phase 8)
+
+No new game systems. Host + contract hardening.
+
+- [x] Atomic `dist.next` cutover (PR #9)
+- [x] GitHub Actions CI on PR/push (`npm ci`, `npm test`, `npm run build`)
+- [x] Deploy script runs tests before swap
+- [x] Nested save validation (GameState + lastReport); rebuild from checked fields
+- [x] Autosave failures surfaced in the UI
+- [x] AGENTS.md / SPEC / CONTRIBUTING match implemented state
 
 ---
 

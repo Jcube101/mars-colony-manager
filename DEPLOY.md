@@ -100,7 +100,7 @@ bash ~/projects/mars-colony-manager/scripts/deploy-jobpi.sh
 The script **does not build into live `dist/`**. Vite writes `dist.next/`, then the directories are renamed (`dist` → `dist.prev`, `dist.next` → `dist`) and the unit restarts. Downtime is the restart (~1s), not the compile. A failed health check restores `dist.prev`.
 
 ```text
-npm ci + vite --outDir dist.next     # live python server still serves old dist/
+npm ci → npm test → vite --outDir dist.next   # live python server still serves old dist/
 mv dist dist.prev && mv dist.next dist
 systemctl --user restart …
 curl health check  →  on failure, restore dist.prev
@@ -112,6 +112,7 @@ Manual equivalent:
 cd ~/projects/mars-colony-manager
 git pull --ff-only origin main
 npm ci
+npm test
 rm -rf dist.next
 npx tsc --noEmit
 npx vite build --outDir dist.next --emptyOutDir
