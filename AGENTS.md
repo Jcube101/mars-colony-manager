@@ -8,7 +8,7 @@ A **browser-based, turn-based Mars colony systems game**. The player is an Earth
 
 **Philosophy:** sim-first, data-driven balance, UI as a report renderer. Not a city-builder and not a real-time survival game.
 
-**Current version:** design-complete prototype planning (implementation not started).
+**Current version:** playable prototype (Phases 1–8). Production: **https://mars.job-joseph.com**.
 
 ## Read order (mandatory before coding)
 
@@ -145,7 +145,7 @@ This repo uses **feature branches in a single working copy**. Do not create git 
 3. Implement **only** that scope; do not invent systems outside GDD.  
 4. Prove it: `npm test` and `npm run build` (once scaffold exists).  
 5. Open a **PR into `main`** (even solo).  
-6. When CI exists, require green checks before merge.  
+6. Require green CI on the PR before merge.  
 7. Merge → delete feature branch → add a LEARNINGS entry **only if** the decision is major (architecture, pipeline, player fantasy).  
 
 ### Agent use (Grok Build)
@@ -172,14 +172,14 @@ You are the tech lead; agents are fast juniors. Constrain them.
 
 **Do not:** code or commit on `main`; run multiple write-capable agents stomping the same files uncoordinated; let agents expand design; invent worktree workflows for this repo.
 
-### CI/CD (when code exists)
+### CI/CD
 
 | Stage | Do |
 |-------|-----|
-| **CI (early)** | On PR/push: install, test, production build |
-| **CD (later)** | Deploy `dist/` only from green `main` (Pages/itch/etc.) |
+| **CI** | GitHub Actions on PR/push: `npm ci`, `npm test`, `npm run build`. Required green before merge. |
+| **CD** | From green `main`: `scripts/deploy-jobpi.sh` (tests, then atomic `dist.next` swap). Canonical host is jobpi, not Pages. |
 
-CI protects the **sim contract**. CD is for sharing a build—not a day-one requirement.
+CI protects the **sim contract**. Do not deploy a `main` that did not pass CI.
 
 ### Definition of done (any phase)
 

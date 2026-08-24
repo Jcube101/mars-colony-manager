@@ -76,6 +76,18 @@ function defaultDriver(): StorageDriver {
   return browserDriver();
 }
 
+function storageErrorMessage(e: unknown, fallback: string): string {
+  if (
+    e &&
+    typeof e === 'object' &&
+    'name' in e &&
+    (e as { name: string }).name === 'QuotaExceededError'
+  ) {
+    return 'Storage quota exceeded. Export a JSON backup.';
+  }
+  return e instanceof Error ? e.message : fallback;
+}
+
 export function writeSlot(
   slot: SaveSlotId,
   state: GameState,
@@ -90,10 +102,7 @@ export function writeSlot(
     driver.setItem(STORAGE_KEYS.slot(slot), json);
     return { ok: true };
   } catch (e) {
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : 'Failed to write slot.',
-    };
+    return { ok: false, error: storageErrorMessage(e, 'Failed to write slot.') };
   }
 }
 
@@ -126,10 +135,7 @@ export function writeAutosave(
     driver.setItem(STORAGE_KEYS.autosave, json);
     return { ok: true };
   } catch (e) {
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : 'Failed to autosave.',
-    };
+    return { ok: false, error: storageErrorMessage(e, 'Failed to autosave.') };
   }
 }
 

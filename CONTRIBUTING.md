@@ -33,7 +33,7 @@ Switch missions by switching branches (commit or stash first). One branch per RO
 2. Implement only that phase’s checklist on that branch (never on `main`).  
 3. Locally: `npm test` and `npm run build` (once scaffold exists).  
 4. Open a PR into `main` (even solo — good habit).  
-5. CI should pass when it exists; until then, don’t merge red local tests.  
+5. CI must be green on the PR (`npm ci`, `npm test`, `npm run build`). Don’t merge red.  
 6. Merge → delete the feature branch → log only **major** decisions in LEARNINGS.  
 
 Detail: **Playbook** in [AGENTS.md](AGENTS.md).  

@@ -118,6 +118,9 @@ if [[ "$MODE" == "full" ]]; then
   echo "==> npm ci"
   npm ci
 
+  echo "==> npm test (sim contract)"
+  npm test
+
   echo "==> typecheck + Vite build into dist.next (live dist/ untouched)"
   rm -rf "$STAGING"
   npx tsc --noEmit

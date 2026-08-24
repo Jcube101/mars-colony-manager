@@ -7,8 +7,8 @@
 | **Product** | Mars Colony Manager |
 | **Type** | Single-player browser game (turn-based systems / management) |
 | **Design ref** | [GDD.md](GDD.md) v0.3 |
-| **Spec version** | 0.1.1 (scaffold landed; folder tree active) |
-| **Goal** | Implement the locked GDD loop: monthly Earth requests, 2-month lag, ecosystem sim, report-centric UI, local saves |
+| **Spec version** | 0.2.0 (playable prototype; CI + nested save validation) |
+| **Goal** | Locked GDD loop: monthly Earth requests, 2-month lag, ecosystem sim, report-centric UI, local saves |
 
 ## 2. Philosophy
 
@@ -109,7 +109,9 @@ mars-colony-manager/
 └── .gitignore
 ```
 
-### Application tree (planned at scaffold)
+### Application tree (current)
+
+Plus: `src/data/balance.ts`, extra `src/ui/*`, `tests/save/`, `deploy/`, `scripts/deploy-jobpi.sh`, `.github/workflows/ci.yml`.
 
 ```
 mars-colony-manager/
@@ -268,7 +270,7 @@ No map view in v1.
 | Determinism | Same seed + actions ⇒ identical serialized state |
 | Manual | Vertical slice playtest checklist (Phase 4–6) |
 
-CI: optional later (GitHub Actions: `npm test`).
+**CI (required):** GitHub Actions on PR/push — `npm ci`, `npm test`, `npm run build`. Pi deploy also runs `npm test` before the `dist.next` swap.
 
 ## 10. Non-functional requirements
 
@@ -277,13 +279,13 @@ CI: optional later (GitHub Actions: `npm test`).
 | Performance | Month resolve ≪ 50ms on mid laptop (10 ticks, tiny state) |
 | Accessibility | Keyboard-usable actions; status not color-only |
 | Privacy | No required network calls for core play |
-| Save safety | Autosave each month boundary; export always available |
+| Save safety | Autosave each month boundary; nested `GameState` + `lastReport` validation on import; autosave failures shown in UI; export always available |
 | Clarity | Status chips Stable/Watch/Critical; red reserved for Critical |
 
 ## 11. Security
 
 - No auth surface in v1.  
-- Treat import JSON as untrusted: validate shape/version before load; reject corrupt saves safely.  
+- Treat import JSON as untrusted: validate format/version and nested `GameState` / `lastReport` (finite numbers, known species/resource/event ids). Rebuild state from checked fields; reject corrupt saves.  
 - Debug tools must not ship enabled by default in production builds (query-flag gated).
 
 ## 12. Out of scope (v1 / prototype)

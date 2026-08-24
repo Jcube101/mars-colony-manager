@@ -18,8 +18,9 @@ This is a **browser, turn-based systems game** — lagged decisions over a livin
 | Item | State |
 |------|--------|
 | Design (GDD) | **v0.3 — locked for prototype** |
-| Implementation | **Playable prototype** (Phases 1–7 polish) |
+| Implementation | **Playable prototype** (Phases 1–8) |
 | Production host | jobpi self-host — see [DEPLOY.md](DEPLOY.md) |
+| CI | GitHub Actions on PR/push (`npm test` + `npm run build`) |
 | Target stack | Vite + TypeScript, pure sim core, local saves |
 
 ## Design pillars

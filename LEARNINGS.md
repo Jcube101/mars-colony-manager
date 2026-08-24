@@ -38,6 +38,18 @@ Major decisions only — enough that you can answer “why did we do it this way
 
 ---
 
+### Q: Why GitHub Actions CI now that the game is hosted?
+
+**A (2026-08-25):** CI protects the sim contract. Same seed + actions must stay reproducible, and a bad `main` can ship to mars.job-joseph.com. Actions runs `npm ci`, `npm test`, and `npm run build` on PR/push. The Pi deploy script also runs tests before the `dist.next` swap.
+
+---
+
+### Q: Why deep save validation instead of a schema library?
+
+**A (2026-08-25):** Import JSON is untrusted (SPEC §11) and we do not want a schema dependency. Validate nested fields, finite numbers, and known species/resource/event ids; rebuild `GameState` so extra keys cannot leak into the sim. Autosave failures must surface in the UI — silent quota loss looks like a vanished run.
+
+---
+
 ## Later entries
 
-Add new major Q/As below as implementation forces real choices (e.g. first CI setup). Skip anything already obvious from GDD/SPEC.
+Add new major Q/As below as implementation forces real choices. Skip anything already obvious from GDD/SPEC.
