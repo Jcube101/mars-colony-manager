@@ -3,6 +3,9 @@ node_modules/
 
 # Build
 dist/
+dist.next/
+dist.prev/
+dist.failed/
 *.local
 
 # Vite

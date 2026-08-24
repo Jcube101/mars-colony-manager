@@ -97,15 +97,32 @@ ssh jobpi
 bash ~/projects/mars-colony-manager/scripts/deploy-jobpi.sh
 ```
 
+The script **does not build into live `dist/`**. Vite writes `dist.next/`, then the directories are renamed (`dist` → `dist.prev`, `dist.next` → `dist`) and the unit restarts. Downtime is the restart (~1s), not the compile. A failed health check restores `dist.prev`.
+
+```text
+npm ci + vite --outDir dist.next     # live python server still serves old dist/
+mv dist dist.prev && mv dist.next dist
+systemctl --user restart …
+curl health check  →  on failure, restore dist.prev
+```
+
 Manual equivalent:
 
 ```bash
 cd ~/projects/mars-colony-manager
 git pull --ff-only origin main
 npm ci
-npm run build
-systemctl --user restart mars-colony-manager.service
-curl -fsS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8018/
+rm -rf dist.next
+npx tsc --noEmit
+npx vite build --outDir dist.next --emptyOutDir
+# then run the script's swap, or:
+bash scripts/deploy-jobpi.sh --swap-only
+```
+
+Rollback the previous cutover:
+
+```bash
+bash ~/projects/mars-colony-manager/scripts/deploy-jobpi.sh --rollback
 ```
 
 No Cloudflare change on routine deploys.
@@ -122,14 +139,15 @@ No Cloudflare change on routine deploys.
 
 ### Build on Windows, rsync dist (alternative)
 
-If Pi Node is unavailable:
+If Pi Node is unavailable, copy into **`dist.next`** (never onto live `dist/`), then swap:
 
 ```powershell
 # on Windows, repo root
 npm ci
-npm run build
-scp -r dist jobpi:~/projects/mars-colony-manager/
-ssh jobpi "systemctl --user restart mars-colony-manager.service"
+npx tsc --noEmit
+npx vite build --outDir dist.next --emptyOutDir
+scp -r dist.next jobpi:~/projects/mars-colony-manager/
+ssh jobpi "bash ~/projects/mars-colony-manager/scripts/deploy-jobpi.sh --swap-only"
 ```
 
 Prefer **build on Pi** so production matches aarch64/Node on the host.
